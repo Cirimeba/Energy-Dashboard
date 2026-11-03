@@ -689,7 +689,7 @@ class Component extends DCLogic {
           cards[1]={...cards[1],label:'Cogeneración actual',value:s.kelloggCogeneration===null?'Sin datos':f(s.kelloggCogeneration,0),unit:'kW',sub:cogenerationTime?`Actualizado ${cogenerationTime}`:'energia_periodo · planta=queretaro'};
           cards[2]={...cards[2],label:'CFE Import',value:s.kelloggActual===null?'Sin datos':f(s.kelloggActual,0),unit:'kW',sub:actualTime?`Actualizado ${actualTime}`:'energia_periodo · planta=queretaro'};
           const gasTime=s.kelloggGasTime?new Date(s.kelloggGasTime).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}):null;
-          cards[3]={...cards[3],label:'Consumo de gas',value:s.kelloggGas===null?'Sin datos':f(s.kelloggGas,2),unit:'Nm³',sub:gasTime?`Actualizado ${gasTime}`:'SQLDB_GN_nm3'};
+          cards[3]={...cards[3],label:'Consumo de gas · 5 min',value:s.kelloggGas===null?'Sin datos':f(s.kelloggGas,2),unit:'Nm³',sub:gasTime?`Actualizado ${gasTime}`:'SQLDB_GN_nm3 · diferencia acumulada'};
         }
         return cards;
       })(),

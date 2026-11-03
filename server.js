@@ -125,8 +125,11 @@ async function actualKelloggDemand() {
   ].join("\n");
   const gasQuery = [
     `from(bucket: "${INFLUX_BUCKET}")`,
-    '|> range(start: -30d)',
+    '|> range(start: -24h)',
     '|> filter(fn: (r) => r["_field"] == "SQLDB_GN_nm3")',
+    '|> sort(columns: ["_time"])',
+    '|> difference(nonNegative: true)',
+    '|> aggregateWindow(every: 5m, fn: sum, createEmpty: false, timeSrc: "_start")',
     '|> last()'
   ].join("\n");
 
