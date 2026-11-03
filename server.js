@@ -101,7 +101,7 @@ async function panelData(id, params) {
 async function actualKelloggDemand() {
   const query = [
     `from(bucket: "${INFLUX_BUCKET}")`,
-    '|> range(start: -10m)',
+    '|> range(start: -24h)',
     '|> filter(fn: (r) => r["_measurement"] == "energia_periodo")',
     '|> filter(fn: (r) => r["planta"] == "queretaro")',
     '|> filter(fn: (r) => r["_field"] == "u_kw")',

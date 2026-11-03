@@ -473,17 +473,21 @@ class Component extends DCLogic {
     if(window.innerWidth<1100) this.setState({collapsed:true});
     this.ro=new ResizeObserver(es=>requestAnimationFrame(()=>es.forEach(e=>{const c=window.echarts&&echarts.getInstanceByDom(e.target);c&&c.resize()})));
     this.loadKelloggActual();
+    this.actualTimer=setInterval(()=>this.loadKelloggActual(),15000);
     this.waitCharts();
     if(this.hdr){this.hro=new ResizeObserver(()=>requestAnimationFrame(()=>{if(!this.hdr)return;const h=Math.round(this.hdr.getBoundingClientRect().height);if(h!==this.state.hH)this.setState({hH:h})}));this.hro.observe(this.hdr)}
   }
   headerRef=el=>{this.hdr=el};
-  componentWillUnmount(){this.hro&&this.hro.disconnect();this.ro&&this.ro.disconnect()}
+  componentWillUnmount(){clearInterval(this.actualTimer);this.hro&&this.hro.disconnect();this.ro&&this.ro.disconnect()}
   async loadKelloggActual(){
     try{
       const response=await fetch('/api/actual',{cache:'no-store'});
       if(!response.ok){this.setState({kelloggActual:null});return}
       const data=await response.json();
-      this.setState({kelloggActual:Number.isFinite(data.value)?data.value:null});
+      this.setState({
+        kelloggActual:Number.isFinite(data.value)?data.value:null,
+        kelloggActualTime:data.time||null
+      });
     }catch(error){this.setState({kelloggActual:null})}
   }
   componentDidUpdate(){this.sync()}
@@ -667,7 +671,8 @@ class Component extends DCLogic {
       kpis:(()=>{
         const cards=(kp[s.view]||[]).map(k=>({...k,value:'Sin datos',unit:'',delta:'',sub:'Sin datos'}));
         if(s.view==='e_kellogg'&&cards[0]){
-          cards[0]={...cards[0],label:'Demanda actual',value:s.kelloggActual===null?'Sin datos':f(s.kelloggActual,0),unit:'kW',sub:'energia_periodo · planta=queretaro'};
+          const actualTime=s.kelloggActualTime?new Date(s.kelloggActualTime).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}):null;
+          cards[0]={...cards[0],label:'Demanda actual',value:s.kelloggActual===null?'Sin datos':f(s.kelloggActual,0),unit:'kW',sub:actualTime?`Actualizado ${actualTime}`:'energia_periodo · planta=queretaro'};
         }
         return cards;
       })(),
