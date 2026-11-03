@@ -99,21 +99,43 @@ async function panelData(id, params) {
 }
 
 async function actualKelloggDemand() {
-  const query = [
+  const demandQuery = [
     `from(bucket: "${INFLUX_BUCKET}")`,
     '|> range(start: -24h)',
     '|> filter(fn: (r) => r["_measurement"] == "energia_periodo")',
     '|> filter(fn: (r) => r["planta"] == "queretaro")',
     '|> filter(fn: (r) => r["_field"] == "u_kw")',
+    '|> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: "_start")',
+    '|> group()',
+    '|> map(fn: (r) => ({ _time: r._time, _value: r._value, serie: "Demanda CFE" }))',
+    '|> group(columns: ["serie"])',
+    '|> last()'
+  ].join("\n");
+  const generationQuery = [
+    `from(bucket: "${INFLUX_BUCKET}")`,
+    '|> range(start: -24h)',
+    '|> filter(fn: (r) => r["_measurement"] == "energia_periodo")',
+    '|> filter(fn: (r) => r["planta"] == "queretaro")',
+    '|> filter(fn: (r) => r["_field"] == "gen_kw")',
     '|> last()'
   ].join("\n");
 
-  const rows = await executeQuery(query);
-  if (!rows.length) return null;
+  const demandRows = await executeQuery(demandQuery);
+  const generationRows = await executeQuery(generationQuery);
+  const demand = demandRows[demandRows.length - 1];
+  const generation = generationRows[generationRows.length - 1];
 
-  const row = rows[rows.length - 1];
-  const value = Number(row._value);
-  return Number.isFinite(value) ? { value, unit: "kW", time: row._time } : null;
+  const value = demand ? Number(demand._value) : NaN;
+  const cogenerationValue = generation ? Number(generation._value) : NaN;
+
+  return {
+    value: Number.isFinite(value) ? value : null,
+    unit: "kW",
+    time: demand ? demand._time : null,
+    cogenerationValue: Number.isFinite(cogenerationValue) ? cogenerationValue : null,
+    cogenerationUnit: "kW",
+    cogenerationTime: generation ? generation._time : null
+  };
 }
 
 function staticFile(req, res) {

@@ -460,7 +460,7 @@ class Component extends DCLogic {
       wK:0,wP:0,wKTod:0,wPTod:0,wMon:0,wWW:0,reuse:0,ct:0,hrsg:0,tank:0,cip:0,wPress:0,
       aux:0,oven:0,fry:0,pboil:0,gPress:0,gKTod:0,gPTod:0,gMon:0};
     const rt={t:[],l:[],c:[],g:[],wk:[],ct:[],gt:[],aux:[],oven:[]},hist={};
-    this.state={view:'overview',range:'today',collapsed:false,paused:false,grafanaPanels:[],kelloggActual:null,now:new Date(),v,rt,hist};
+    this.state={view:'overview',range:'today',collapsed:false,paused:false,grafanaPanels:[],kelloggActual:null,kelloggActualTime:null,kelloggCogeneration:null,kelloggCogenerationTime:null,now:new Date(),v,rt,hist};
     this.spCol={};
   }
   derive(v){
@@ -486,9 +486,11 @@ class Component extends DCLogic {
       const data=await response.json();
       this.setState({
         kelloggActual:Number.isFinite(data.value)?data.value:null,
-        kelloggActualTime:data.time||null
+        kelloggActualTime:data.time||null,
+        kelloggCogeneration:Number.isFinite(data.cogenerationValue)?data.cogenerationValue:null,
+        kelloggCogenerationTime:data.cogenerationTime||null
       });
-    }catch(error){this.setState({kelloggActual:null})}
+    }catch(error){this.setState({kelloggActual:null,kelloggCogeneration:null})}
   }
   componentDidUpdate(){this.sync()}
   waitCharts(){if(window.echarts){this.ready=true;this.sync()}else setTimeout(()=>this.waitCharts(),120)}
@@ -673,6 +675,8 @@ class Component extends DCLogic {
         if(s.view==='e_kellogg'&&cards[0]){
           const actualTime=s.kelloggActualTime?new Date(s.kelloggActualTime).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}):null;
           cards[0]={...cards[0],label:'Demanda actual',value:s.kelloggActual===null?'Sin datos':f(s.kelloggActual,0),unit:'kW',sub:actualTime?`Actualizado ${actualTime}`:'energia_periodo · planta=queretaro'};
+          const cogenerationTime=s.kelloggCogenerationTime?new Date(s.kelloggCogenerationTime).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}):null;
+          cards[1]={...cards[1],label:'Cogeneración actual',value:s.kelloggCogeneration===null?'Sin datos':f(s.kelloggCogeneration,0),unit:'kW',sub:cogenerationTime?`Actualizado ${cogenerationTime}`:'energia_periodo · planta=queretaro'};
         }
         return cards;
       })(),
