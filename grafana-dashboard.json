@@ -1,0 +1,2001 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 5,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfsf0evoq45q8b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 1,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "max": 7800,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Punta"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Base"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Demanda CFE\"}"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 16
+              },
+              {
+                "id": "custom.pointSize",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Kw CFE"
+              },
+              {
+                "id": "custom.lineInterpolation",
+                "value": "linear"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{banda=\"Punta\"}"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Punta"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Demanda CFE\"}"
+            },
+            "properties": [
+              {
+                "id": "custom.lineInterpolation",
+                "value": "linear"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Cogeneración\"}"
+            },
+            "properties": [
+              {
+                "id": "custom.lineInterpolation",
+                "value": "linear"
+              },
+              {
+                "id": "custom.axisColorMode",
+                "value": "text"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 25
+              },
+              {
+                "id": "displayName",
+                "value": "Kw Cogeneración"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{banda=\"Intermedia\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Intermedio"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{banda=\"Base\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Base"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Carga total planta\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Carga Total"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-purple",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 20
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineInterpolation",
+                "value": "linear"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Potencia\"}"
+            },
+            "properties": [
+              {
+                "id": "custom.fillOpacity",
+                "value": 21
+              },
+              {
+                "id": "displayName",
+                "value": "Carga Pringle"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Potencia ION\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Carga Total - Caseta Principal"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Otra planta\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Nominal Graphic"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 20,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "query": "import \"date\"\r\n\r\n// ── Clasificador tarifario CFE (regiones Central/Norte/etc.) ──\r\n// Los timestamps en InfluxDB ahora son UTC real (colector_energia.py corregido).\r\n// México no observa horario de verano desde 2022 → offset fijo UTC-6 todo el año.\r\n\r\nnesimoLunes = (y, mes, n) => {\r\n  d1 = time(v: y + \"-\" + mes + \"-01T00:00:00Z\")\r\n  wd = date.weekDay(t: d1)\r\n  offset = (if wd <= 1 then 1 - wd else 8 - wd) + (n - 1) * 7\r\n  return date.add(d: duration(v: offset * 86400000000000), to: d1)\r\n}\r\n\r\nclasifica = (t) => {\r\n  // Convertimos a hora local (UTC-6 fijo) ANTES de sacar mes/día/hora.\r\n  tLocal = date.sub(d: 6h, from: t)\r\n\r\n  y = string(v: date.year(t: tLocal))\r\n\r\n  // bordes móviles de temporada (comparados en el mismo espacio \"local\")\r\n  abr1   = time(v: y + \"-04-01T00:00:00Z\")\r\n  wdA    = date.weekDay(t: abr1)\r\n  domAbr = date.add(d: duration(v: (if wdA == 0 then 0 else 7 - wdA) * 86400000000000), to: abr1)\r\n  oct31  = time(v: y + \"-10-31T00:00:00Z\")\r\n  domOct = date.sub(d: duration(v: date.weekDay(t: oct31) * 86400000000000), from: oct31)\r\n  feb1   = time(v: y + \"-02-01T00:00:00Z\")\r\n  ago1   = time(v: y + \"-08-01T00:00:00Z\")\r\n\r\n  temp =\r\n    if tLocal >= domAbr and tLocal < ago1 then \"ver\"\r\n    else if tLocal >= domOct or tLocal < feb1 then \"inv\"\r\n    else \"med\"\r\n\r\n  // festivos Art. 74 LFT (sin fracción IX): fijos + lunes móviles\r\n  hoy0     = date.truncate(t: tLocal, unit: 1d)\r\n  mm       = date.month(t: tLocal)\r\n  dd       = date.monthDay(t: tLocal)\r\n  fijo     = (mm == 1 and dd == 1) or (mm == 5 and dd == 1) or (mm == 9 and dd == 16) or (mm == 12 and dd == 25)\r\n  movil    =\r\n    hoy0 == nesimoLunes(y: y, mes: \"02\", n: 1) or   // Constitución\r\n    hoy0 == nesimoLunes(y: y, mes: \"03\", n: 3) or   // Juárez\r\n    hoy0 == nesimoLunes(y: y, mes: \"11\", n: 3)      // Revolución\r\n  festivo  = fijo or movil\r\n\r\n  h   = date.hour(t: tLocal)\r\n  wdR = date.weekDay(t: tLocal)\r\n  wd  = if festivo then 0 else wdR   // festivo se trata como domingo\r\n\r\n  return\r\n    if temp == \"ver\" then\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h >= 1 and h < 6 then \"Base\"\r\n         else if h >= 20 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h >= 1 and h < 7 then \"Base\" else \"Intermedia\")\r\n       else\r\n        (if h < 19 then \"Base\" else \"Intermedia\"))\r\n    else if temp == \"inv\" then\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h < 6 then \"Base\"\r\n         else if h >= 18 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h < 8 then \"Base\"\r\n         else if h >= 19 and h < 21 then \"Punta\"\r\n         else if h >= 21 then \"Base\"\r\n         else \"Intermedia\")\r\n       else\r\n        (if h < 18 then \"Base\" else \"Intermedia\"))\r\n    else  // med: feb–mar y ago–oct\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h < 6 then \"Base\"\r\n         else if h >= 19 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h < 7 then \"Base\" else \"Intermedia\")\r\n       else\r\n        (if h < 19 or h >= 23 then \"Base\" else \"Intermedia\"))\r\n}\r\n\r\n// ── Esqueleto de bandas (con clasificación doble: actual + anterior) ──\r\nesqueleto = from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\" and r._field == \"u_kw\")\r\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: true, timeSrc: \"_start\")\r\n  |> group()\r\n  |> keep(columns: [\"_time\"])\r\n  |> map(fn: (r) => ({\r\n      _time: r._time,\r\n      banda: clasifica(t: r._time),\r\n      bandaPrev: clasifica(t: date.sub(d: 5m, from: r._time))\r\n  }))\r\n\r\nserie = (nombre) =>\r\n  esqueleto\r\n    |> map(fn: (r) => ({\r\n        _time: r._time,\r\n        _value: if r.banda == nombre or r.bandaPrev == nombre then 20000.0 else (float(v: \"NaN\")),\r\n        banda: nombre\r\n    }))\r\n    |> filter(fn: (r) => not exists r._value or r._value != r._value or r._value == 20000.0)\r\n    |> group(columns: [\"banda\"])\r\n\r\nunion(tables: [\r\n  serie(nombre: \"Base\"),\r\n  serie(nombre: \"Intermedia\"),\r\n  serie(nombre: \"Punta\")\r\n])",
+          "refId": "Barras de color"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": false,
+          "query": "from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\")\r\n  |> filter(fn: (r) => r._field == \"u_kw\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> group()\r\n  |> map(fn: (r) => ({ _time: r._time, _value: r._value, serie: \"Demanda CFE\" }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "KW CFE"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": true,
+          "query": "from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\")\r\n  |> filter(fn: (r) => r._field == \"gen_kw\")\r\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false, timeSrc: \"_start\")\r\n  |> group()\r\n  |> map(fn: (r) => ({ _time: r._time, _value: r._value, serie: \"Cogeneración\" }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "KW cogeneracion"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": true,
+          "query": "from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\")\r\n  |> filter(fn: (r) => r._field == \"u_kw\" or r._field == \"gen_kw\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> group(columns: [\"_field\"])\r\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\r\n  |> filter(fn: (r) => exists r.u_kw and exists r.gen_kw)\r\n  |> map(fn: (r) => ({\r\n      _time: r._time,\r\n      _value: r.u_kw + r.gen_kw,\r\n      serie: \"Carga total planta\"\r\n  }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "KW Carga Total"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": false,
+          "query": "import \"date\"\r\n\r\nfrom(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"modbus\" and r.name == \"pm8240_planta\")\r\n  |> filter(fn: (r) => r._field == \"potencia_activa_total_w\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> group()\r\n  |> map(fn: (r) => ({ _time: r._time, _value: r._value / 1000.0, serie: \"Potencia\" }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "KW Pringles"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": false,
+          "query": "from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"ion8650\" and r.log == \"Hist_high_Log\")\r\n  |> filter(fn: (r) => r._field == \"kW_tot_high\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> group()\r\n  |> map(fn: (r) => ({ _time: r._time, _value: r._value, serie: \"Potencia ION\" }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "caseta"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": false,
+          "query": "cfe = from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\" and r._field == \"u_kw\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> map(fn: (r) => ({ _time: r._time, _field: \"cfe\", _value: r._value }))\r\n\r\npm = from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"modbus\" and r.name == \"pm8240_planta\")\r\n  |> filter(fn: (r) => r._field == \"potencia_activa_total_w\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> map(fn: (r) => ({ _time: r._time, _field: \"pm\", _value: r._value / 1000.0 }))\r\n\r\nion = from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"ion8650\" and r.log == \"Hist_high_Log\")\r\n  |> filter(fn: (r) => r._field == \"kW_tot_high\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> map(fn: (r) => ({ _time: r._time, _field: \"ion\", _value: r._value }))\r\n\r\nunion(tables: [cfe, pm, ion])\r\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\r\n  |> filter(fn: (r) => exists r.cfe and exists r.pm and exists r.ion)\r\n  |> map(fn: (r) => ({ _time: r._time, _value: r.ion - r.pm - r.cfe, serie: \"Otra planta\" }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "Nominal Graphic"
+        }
+      ],
+      "title": "Demanda Total CFE",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfsf0evoq45q8b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "dateTimeAsIso"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 20,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "query": "from(bucket: \"energia\")\r\n  |> range(start: -48h)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\" and r._field == \"u_kw\")\r\n  |> last()\r\n  |> map(fn: (r) => ({ _value: float(v: uint(v: r._time)) / 1000000.0 }))\r\n  |> keep(columns: [\"_value\"])",
+          "refId": "A"
+        }
+      ],
+      "title": "Timestamp",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfsf0evoq45q8b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "semi-dark-yellow",
+                "value": 12
+              },
+              {
+                "color": "dark-red",
+                "value": 30
+              }
+            ]
+          },
+          "unit": "m"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 22,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "query": "from(bucket: \"energia\")\r\n  |> range(start: -48h)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\" and r._field == \"u_kw\")\r\n  |> last()\r\n  |> map(fn: (r) => ({\r\n      _value: float(v: int(v: now()) - int(v: r._time)) / 60000000000.0\r\n  }))\r\n  |> keep(columns: [\"_value\"])",
+          "refId": "A"
+        }
+      ],
+      "title": "Minutos desde actualizacion",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfsf0evoq45q8b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "dark-red",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "kW"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 20,
+        "y": 2
+      },
+      "id": 18,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "query": "import \"date\"\r\n\r\n// ── Clasificador tarifario CFE (mismo del documento) ──\r\nnesimoLunes = (y, mes, n) => {\r\n  d1 = time(v: y + \"-\" + mes + \"-01T00:00:00Z\")\r\n  wd = date.weekDay(t: d1)\r\n  offset = (if wd <= 1 then 1 - wd else 8 - wd) + (n - 1) * 7\r\n  return date.add(d: duration(v: offset * 86400000000000), to: d1)\r\n}\r\n\r\nclasifica = (t) => {\r\n  tLocal = date.sub(d: 6h, from: t)\r\n  y = string(v: date.year(t: tLocal))\r\n  \r\n  abr1   = time(v: y + \"-04-01T00:00:00Z\")\r\n  wdA    = date.weekDay(t: abr1)\r\n  domAbr = date.add(d: duration(v: (if wdA == 0 then 0 else 7 - wdA) * 86400000000000), to: abr1)\r\n  oct31  = time(v: y + \"-10-31T00:00:00Z\")\r\n  domOct = date.sub(d: duration(v: date.weekDay(t: oct31) * 86400000000000), from: oct31)\r\n  feb1   = time(v: y + \"-02-01T00:00:00Z\")\r\n  ago1   = time(v: y + \"-08-01T00:00:00Z\")\r\n\r\n  temp =\r\n    if tLocal >= domAbr and tLocal < ago1 then \"ver\"\r\n    else if tLocal >= domOct or tLocal < feb1 then \"inv\"\r\n    else \"med\"\r\n\r\n  hoy0     = date.truncate(t: tLocal, unit: 1d)\r\n  mm       = date.month(t: tLocal)\r\n  dd       = date.monthDay(t: tLocal)\r\n  fijo     = (mm == 1 and dd == 1) or (mm == 5 and dd == 1) or (mm == 9 and dd == 16) or (mm == 12 and dd == 25)\r\n  movil    =\r\n    hoy0 == nesimoLunes(y: y, mes: \"02\", n: 1) or\r\n    hoy0 == nesimoLunes(y: y, mes: \"03\", n: 3) or\r\n    hoy0 == nesimoLunes(y: y, mes: \"11\", n: 3)\r\n  festivo  = fijo or movil\r\n\r\n  h   = date.hour(t: tLocal)\r\n  wdR = date.weekDay(t: tLocal)\r\n  wd  = if festivo then 0 else wdR\r\n\r\n  return\r\n    if temp == \"ver\" then\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h >= 1 and h < 6 then \"Base\"\r\n         else if h >= 20 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h >= 1 and h < 7 then \"Base\" else \"Intermedia\")\r\n       else\r\n        (if h < 19 then \"Base\" else \"Intermedia\"))\r\n    else if temp == \"inv\" then\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h < 6 then \"Base\"\r\n         else if h >= 18 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h < 8 then \"Base\"\r\n         else if h >= 19 and h < 21 then \"Punta\"\r\n         else if h >= 21 then \"Base\"\r\n         else \"Intermedia\")\r\n       else\r\n        (if h < 18 then \"Base\" else \"Intermedia\"))\r\n    else\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h < 6 then \"Base\"\r\n         else if h >= 19 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h < 7 then \"Base\" else \"Intermedia\")\r\n       else\r\n        (if h < 19 or h >= 23 then \"Base\" else \"Intermedia\"))\r\n}\r\n\r\n// ── Extraer año y mes del picker ──\r\nanioPicker = date.year(t: v.timeRangeStart)\r\nmesPicker  = date.month(t: v.timeRangeStart)\r\nmesPadded  = if mesPicker < 10 then \"0\" + string(v: mesPicker) else string(v: mesPicker)\r\n\r\n// ── Rango completo del mes actual ──\r\ninicioMes = time(v: string(v: anioPicker) + \"-\" + mesPadded + \"-01T00:00:00Z\")\r\nfinMes    = date.add(d: 1mo, to: inicioMes)\r\n\r\n// ── Query ──\r\nfrom(bucket: \"energia\")\r\n  |> range(start: inicioMes, stop: finMes)\r\n  |> filter(fn: (r) => r._measurement == \"ion8650\" and r.log == \"Hist_high_Log\")\r\n  |> filter(fn: (r) => r._field == \"kW_tot_high\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> map(fn: (r) => ({\r\n      _time: r._time,\r\n      _value: r._value,\r\n      banda: clasifica(t: r._time)\r\n  }))\r\n  |> filter(fn: (r) => r.banda == \"Punta\")\r\n  |> max(column: \"_value\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Caseta - Max KW del mes (Punta)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfsf0evoq45q8b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 4,
+        "x": 20,
+        "y": 5
+      },
+      "id": 25,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^Time$/",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "query": "import \"date\"\r\n\r\n// ── Clasificador tarifario CFE (mismo del documento) ──\r\nnesimoLunes = (y, mes, n) => {\r\n  d1 = time(v: y + \"-\" + mes + \"-01T00:00:00Z\")\r\n  wd = date.weekDay(t: d1)\r\n  offset = (if wd <= 1 then 1 - wd else 8 - wd) + (n - 1) * 7\r\n  return date.add(d: duration(v: offset * 86400000000000), to: d1)\r\n}\r\n\r\nclasifica = (t) => {\r\n  tLocal = date.sub(d: 6h, from: t)\r\n  y = string(v: date.year(t: tLocal))\r\n  \r\n  abr1   = time(v: y + \"-04-01T00:00:00Z\")\r\n  wdA    = date.weekDay(t: abr1)\r\n  domAbr = date.add(d: duration(v: (if wdA == 0 then 0 else 7 - wdA) * 86400000000000), to: abr1)\r\n  oct31  = time(v: y + \"-10-31T00:00:00Z\")\r\n  domOct = date.sub(d: duration(v: date.weekDay(t: oct31) * 86400000000000), from: oct31)\r\n  feb1   = time(v: y + \"-02-01T00:00:00Z\")\r\n  ago1   = time(v: y + \"-08-01T00:00:00Z\")\r\n\r\n  temp =\r\n    if tLocal >= domAbr and tLocal < ago1 then \"ver\"\r\n    else if tLocal >= domOct or tLocal < feb1 then \"inv\"\r\n    else \"med\"\r\n\r\n  hoy0     = date.truncate(t: tLocal, unit: 1d)\r\n  mm       = date.month(t: tLocal)\r\n  dd       = date.monthDay(t: tLocal)\r\n  fijo     = (mm == 1 and dd == 1) or (mm == 5 and dd == 1) or (mm == 9 and dd == 16) or (mm == 12 and dd == 25)\r\n  movil    =\r\n    hoy0 == nesimoLunes(y: y, mes: \"02\", n: 1) or\r\n    hoy0 == nesimoLunes(y: y, mes: \"03\", n: 3) or\r\n    hoy0 == nesimoLunes(y: y, mes: \"11\", n: 3)\r\n  festivo  = fijo or movil\r\n\r\n  h   = date.hour(t: tLocal)\r\n  wdR = date.weekDay(t: tLocal)\r\n  wd  = if festivo then 0 else wdR\r\n\r\n  return\r\n    if temp == \"ver\" then\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h >= 1 and h < 6 then \"Base\"\r\n         else if h >= 20 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h >= 1 and h < 7 then \"Base\" else \"Intermedia\")\r\n       else\r\n        (if h < 19 then \"Base\" else \"Intermedia\"))\r\n    else if temp == \"inv\" then\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h < 6 then \"Base\"\r\n         else if h >= 18 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h < 8 then \"Base\"\r\n         else if h >= 19 and h < 21 then \"Punta\"\r\n         else if h >= 21 then \"Base\"\r\n         else \"Intermedia\")\r\n       else\r\n        (if h < 18 then \"Base\" else \"Intermedia\"))\r\n    else\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h < 6 then \"Base\"\r\n         else if h >= 19 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h < 7 then \"Base\" else \"Intermedia\")\r\n       else\r\n        (if h < 19 or h >= 23 then \"Base\" else \"Intermedia\"))\r\n}\r\n\r\n// ── Formateador de fecha/hora legible ──\r\nfmt = (t) => {\r\n  y  = string(v: date.year(t: t))\r\n  mo = date.month(t: t)\r\n  moS = if mo < 10 then \"0\" + string(v: mo) else string(v: mo)\r\n  d  = date.monthDay(t: t)\r\n  dS = if d < 10 then \"0\" + string(v: d) else string(v: d)\r\n  h  = date.hour(t: t)\r\n  hS = if h < 10 then \"0\" + string(v: h) else string(v: h)\r\n  mi = date.minute(t: t)\r\n  miS = if mi < 10 then \"0\" + string(v: mi) else string(v: mi)\r\n  return y + \"-\" + moS + \"-\" + dS + \"  \" + hS + \":\" + miS\r\n}\r\n\r\n// ── Extraer año y mes del picker ──\r\nanioPicker = date.year(t: v.timeRangeStart)\r\nmesPicker  = date.month(t: v.timeRangeStart)\r\nmesPadded  = if mesPicker < 10 then \"0\" + string(v: mesPicker) else string(v: mesPicker)\r\n\r\n// ── Rango completo del mes actual ──\r\ninicioMes = time(v: string(v: anioPicker) + \"-\" + mesPadded + \"-01T00:00:00Z\")\r\nfinMes    = date.add(d: 1mo, to: inicioMes)\r\n\r\n// ── Query ──\r\nfrom(bucket: \"energia\")\r\n  |> range(start: inicioMes, stop: finMes)\r\n  |> filter(fn: (r) => r._measurement == \"ion8650\" and r.log == \"Hist_high_Log\")\r\n  |> filter(fn: (r) => r._field == \"kW_tot_high\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> map(fn: (r) => ({\r\n      _time: r._time,\r\n      _value: r._value,\r\n      banda: clasifica(t: r._time)\r\n  }))\r\n  |> group()\r\n  |> filter(fn: (r) => r.banda == \"Punta\")\r\n  |> max(column: \"_value\")\r\n  |> map(fn: (r) => ({\r\n      _time: r._time,\r\n      _value: fmt(t: date.sub(d: 6h, from: r._time))\r\n  }))",
+          "refId": "A"
+        }
+      ],
+      "title": "Fecha",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfsf0evoq45q8b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "dark-red",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "kW"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 7
+      },
+      "id": 15,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "query": "import \"date\"\r\n\r\n// ── Clasificador tarifario CFE (mismo del documento) ──\r\nnesimoLunes = (y, mes, n) => {\r\n  d1 = time(v: y + \"-\" + mes + \"-01T00:00:00Z\")\r\n  wd = date.weekDay(t: d1)\r\n  offset = (if wd <= 1 then 1 - wd else 8 - wd) + (n - 1) * 7\r\n  return date.add(d: duration(v: offset * 86400000000000), to: d1)\r\n}\r\n\r\nclasifica = (t) => {\r\n  tLocal = date.sub(d: 6h, from: t)\r\n  y = string(v: date.year(t: tLocal))\r\n  \r\n  abr1   = time(v: y + \"-04-01T00:00:00Z\")\r\n  wdA    = date.weekDay(t: abr1)\r\n  domAbr = date.add(d: duration(v: (if wdA == 0 then 0 else 7 - wdA) * 86400000000000), to: abr1)\r\n  oct31  = time(v: y + \"-10-31T00:00:00Z\")\r\n  domOct = date.sub(d: duration(v: date.weekDay(t: oct31) * 86400000000000), from: oct31)\r\n  feb1   = time(v: y + \"-02-01T00:00:00Z\")\r\n  ago1   = time(v: y + \"-08-01T00:00:00Z\")\r\n\r\n  temp =\r\n    if tLocal >= domAbr and tLocal < ago1 then \"ver\"\r\n    else if tLocal >= domOct or tLocal < feb1 then \"inv\"\r\n    else \"med\"\r\n\r\n  hoy0     = date.truncate(t: tLocal, unit: 1d)\r\n  mm       = date.month(t: tLocal)\r\n  dd       = date.monthDay(t: tLocal)\r\n  fijo     = (mm == 1 and dd == 1) or (mm == 5 and dd == 1) or (mm == 9 and dd == 16) or (mm == 12 and dd == 25)\r\n  movil    =\r\n    hoy0 == nesimoLunes(y: y, mes: \"02\", n: 1) or\r\n    hoy0 == nesimoLunes(y: y, mes: \"03\", n: 3) or\r\n    hoy0 == nesimoLunes(y: y, mes: \"11\", n: 3)\r\n  festivo  = fijo or movil\r\n\r\n  h   = date.hour(t: tLocal)\r\n  wdR = date.weekDay(t: tLocal)\r\n  wd  = if festivo then 0 else wdR\r\n\r\n  return\r\n    if temp == \"ver\" then\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h >= 1 and h < 6 then \"Base\"\r\n         else if h >= 20 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h >= 1 and h < 7 then \"Base\" else \"Intermedia\")\r\n       else\r\n        (if h < 19 then \"Base\" else \"Intermedia\"))\r\n    else if temp == \"inv\" then\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h < 6 then \"Base\"\r\n         else if h >= 18 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h < 8 then \"Base\"\r\n         else if h >= 19 and h < 21 then \"Punta\"\r\n         else if h >= 21 then \"Base\"\r\n         else \"Intermedia\")\r\n       else\r\n        (if h < 18 then \"Base\" else \"Intermedia\"))\r\n    else\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h < 6 then \"Base\"\r\n         else if h >= 19 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h < 7 then \"Base\" else \"Intermedia\")\r\n       else\r\n        (if h < 19 or h >= 23 then \"Base\" else \"Intermedia\"))\r\n}\r\n\r\n// ── Extraer año y mes del picker ──\r\nanioPicker = date.year(t: v.timeRangeStart)\r\nmesPicker  = date.month(t: v.timeRangeStart)\r\nmesPadded  = if mesPicker < 10 then \"0\" + string(v: mesPicker) else string(v: mesPicker)\r\n\r\n// ── Rango completo del mes actual ──\r\ninicioMes = time(v: string(v: anioPicker) + \"-\" + mesPadded + \"-01T00:00:00Z\")\r\nfinMes    = date.add(d: 1mo, to: inicioMes)\r\n\r\n// ── Query ──\r\nfrom(bucket: \"energia\")\r\n  |> range(start: inicioMes, stop: finMes)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\")\r\n  |> filter(fn: (r) => r._field == \"u_kw\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> map(fn: (r) => ({\r\n      _time: r._time,\r\n      _value: r._value,\r\n      banda: clasifica(t: r._time)\r\n  }))\r\n  |> group()                       // ← colapsa todo a una sola tabla\r\n  |> filter(fn: (r) => r.banda == \"Punta\")\r\n  |> max(column: \"_value\")\r\n  |> map(fn: (r) => ({\r\n      _time: r._time,\r\n      hora_local: date.sub(d: 6h, from: r._time),\r\n      valor_pico_kw: r._value,\r\n      banda: r.banda\r\n  }))",
+          "refId": "A"
+        }
+      ],
+      "title": "Kellogg- Max KW del mes (Punta)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfsf0evoq45q8b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 4,
+        "x": 20,
+        "y": 11
+      },
+      "id": 24,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^Time$/",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "query": "import \"date\"\r\n\r\n// ── Clasificador tarifario CFE (mismo del documento) ──\r\nnesimoLunes = (y, mes, n) => {\r\n  d1 = time(v: y + \"-\" + mes + \"-01T00:00:00Z\")\r\n  wd = date.weekDay(t: d1)\r\n  offset = (if wd <= 1 then 1 - wd else 8 - wd) + (n - 1) * 7\r\n  return date.add(d: duration(v: offset * 86400000000000), to: d1)\r\n}\r\n\r\nclasifica = (t) => {\r\n  tLocal = date.sub(d: 6h, from: t)\r\n  y = string(v: date.year(t: tLocal))\r\n  \r\n  abr1   = time(v: y + \"-04-01T00:00:00Z\")\r\n  wdA    = date.weekDay(t: abr1)\r\n  domAbr = date.add(d: duration(v: (if wdA == 0 then 0 else 7 - wdA) * 86400000000000), to: abr1)\r\n  oct31  = time(v: y + \"-10-31T00:00:00Z\")\r\n  domOct = date.sub(d: duration(v: date.weekDay(t: oct31) * 86400000000000), from: oct31)\r\n  feb1   = time(v: y + \"-02-01T00:00:00Z\")\r\n  ago1   = time(v: y + \"-08-01T00:00:00Z\")\r\n\r\n  temp =\r\n    if tLocal >= domAbr and tLocal < ago1 then \"ver\"\r\n    else if tLocal >= domOct or tLocal < feb1 then \"inv\"\r\n    else \"med\"\r\n\r\n  hoy0     = date.truncate(t: tLocal, unit: 1d)\r\n  mm       = date.month(t: tLocal)\r\n  dd       = date.monthDay(t: tLocal)\r\n  fijo     = (mm == 1 and dd == 1) or (mm == 5 and dd == 1) or (mm == 9 and dd == 16) or (mm == 12 and dd == 25)\r\n  movil    =\r\n    hoy0 == nesimoLunes(y: y, mes: \"02\", n: 1) or\r\n    hoy0 == nesimoLunes(y: y, mes: \"03\", n: 3) or\r\n    hoy0 == nesimoLunes(y: y, mes: \"11\", n: 3)\r\n  festivo  = fijo or movil\r\n\r\n  h   = date.hour(t: tLocal)\r\n  wdR = date.weekDay(t: tLocal)\r\n  wd  = if festivo then 0 else wdR\r\n\r\n  return\r\n    if temp == \"ver\" then\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h >= 1 and h < 6 then \"Base\"\r\n         else if h >= 20 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h >= 1 and h < 7 then \"Base\" else \"Intermedia\")\r\n       else\r\n        (if h < 19 then \"Base\" else \"Intermedia\"))\r\n    else if temp == \"inv\" then\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h < 6 then \"Base\"\r\n         else if h >= 18 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h < 8 then \"Base\"\r\n         else if h >= 19 and h < 21 then \"Punta\"\r\n         else if h >= 21 then \"Base\"\r\n         else \"Intermedia\")\r\n       else\r\n        (if h < 18 then \"Base\" else \"Intermedia\"))\r\n    else\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h < 6 then \"Base\"\r\n         else if h >= 19 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h < 7 then \"Base\" else \"Intermedia\")\r\n       else\r\n        (if h < 19 or h >= 23 then \"Base\" else \"Intermedia\"))\r\n}\r\n\r\n// ── Formateador de fecha/hora legible ──\r\nfmt = (t) => {\r\n  y  = string(v: date.year(t: t))\r\n  mo = date.month(t: t)\r\n  moS = if mo < 10 then \"0\" + string(v: mo) else string(v: mo)\r\n  d  = date.monthDay(t: t)\r\n  dS = if d < 10 then \"0\" + string(v: d) else string(v: d)\r\n  h  = date.hour(t: t)\r\n  hS = if h < 10 then \"0\" + string(v: h) else string(v: h)\r\n  mi = date.minute(t: t)\r\n  miS = if mi < 10 then \"0\" + string(v: mi) else string(v: mi)\r\n  return y + \"-\" + moS + \"-\" + dS + \"  \" + hS + \":\" + miS\r\n}\r\n\r\n// ── Extraer año y mes del picker ──\r\nanioPicker = date.year(t: v.timeRangeStart)\r\nmesPicker  = date.month(t: v.timeRangeStart)\r\nmesPadded  = if mesPicker < 10 then \"0\" + string(v: mesPicker) else string(v: mesPicker)\r\n\r\n// ── Rango completo del mes actual ──\r\ninicioMes = time(v: string(v: anioPicker) + \"-\" + mesPadded + \"-01T00:00:00Z\")\r\nfinMes    = date.add(d: 1mo, to: inicioMes)\r\n\r\n// ── Query ──\r\nfrom(bucket: \"energia\")\r\n  |> range(start: inicioMes, stop: finMes)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\")\r\n  |> filter(fn: (r) => r._field == \"u_kw\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> map(fn: (r) => ({\r\n      _time: r._time,\r\n      _value: r._value,\r\n      banda: clasifica(t: r._time)\r\n  }))\r\n  |> group()\r\n  |> filter(fn: (r) => r.banda == \"Punta\")\r\n  |> max(column: \"_value\")\r\n  |> map(fn: (r) => ({\r\n      _time: r._time,\r\n      _value: fmt(t: date.sub(d: 6h, from: r._time))\r\n  }))",
+          "refId": "A"
+        }
+      ],
+      "title": "Fecha",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfsf0evoq45q8b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 1,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "max": 7800,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Punta"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Base"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Demanda CFE\"}"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 16
+              },
+              {
+                "id": "custom.pointSize",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Kw CFE"
+              },
+              {
+                "id": "custom.lineInterpolation",
+                "value": "linear"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{banda=\"Punta\"}"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Punta"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Demanda CFE\"}"
+            },
+            "properties": [
+              {
+                "id": "custom.lineInterpolation",
+                "value": "linear"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Cogeneración\"}"
+            },
+            "properties": [
+              {
+                "id": "custom.lineInterpolation",
+                "value": "linear"
+              },
+              {
+                "id": "custom.axisColorMode",
+                "value": "text"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 25
+              },
+              {
+                "id": "displayName",
+                "value": "Kw Cogeneración"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{banda=\"Intermedia\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Intermedio"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{banda=\"Base\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Base"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Carga total planta\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Carga Total"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-purple",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 20
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineInterpolation",
+                "value": "linear"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Potencia\"}"
+            },
+            "properties": [
+              {
+                "id": "custom.fillOpacity",
+                "value": 21
+              },
+              {
+                "id": "displayName",
+                "value": "Carga Pringle"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Potencia ION\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Carga Caseta"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Potencia ION\"}"
+            },
+            "properties": []
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 20,
+        "x": 0,
+        "y": 13
+      },
+      "id": 13,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "query": "import \"date\"\r\n\r\n// ── Clasificador tarifario CFE (regiones Central/Norte/etc.) ──\r\n// Los timestamps en InfluxDB ahora son UTC real (colector_energia.py corregido).\r\n// México no observa horario de verano desde 2022 → offset fijo UTC-6 todo el año.\r\n\r\nnesimoLunes = (y, mes, n) => {\r\n  d1 = time(v: y + \"-\" + mes + \"-01T00:00:00Z\")\r\n  wd = date.weekDay(t: d1)\r\n  offset = (if wd <= 1 then 1 - wd else 8 - wd) + (n - 1) * 7\r\n  return date.add(d: duration(v: offset * 86400000000000), to: d1)\r\n}\r\n\r\nclasifica = (t) => {\r\n  // Convertimos a hora local (UTC-6 fijo) ANTES de sacar mes/día/hora.\r\n  tLocal = date.sub(d: 6h, from: t)\r\n\r\n  y = string(v: date.year(t: tLocal))\r\n\r\n  // bordes móviles de temporada (comparados en el mismo espacio \"local\")\r\n  abr1   = time(v: y + \"-04-01T00:00:00Z\")\r\n  wdA    = date.weekDay(t: abr1)\r\n  domAbr = date.add(d: duration(v: (if wdA == 0 then 0 else 7 - wdA) * 86400000000000), to: abr1)\r\n  oct31  = time(v: y + \"-10-31T00:00:00Z\")\r\n  domOct = date.sub(d: duration(v: date.weekDay(t: oct31) * 86400000000000), from: oct31)\r\n  feb1   = time(v: y + \"-02-01T00:00:00Z\")\r\n  ago1   = time(v: y + \"-08-01T00:00:00Z\")\r\n\r\n  temp =\r\n    if tLocal >= domAbr and tLocal < ago1 then \"ver\"\r\n    else if tLocal >= domOct or tLocal < feb1 then \"inv\"\r\n    else \"med\"\r\n\r\n  // festivos Art. 74 LFT (sin fracción IX): fijos + lunes móviles\r\n  hoy0     = date.truncate(t: tLocal, unit: 1d)\r\n  mm       = date.month(t: tLocal)\r\n  dd       = date.monthDay(t: tLocal)\r\n  fijo     = (mm == 1 and dd == 1) or (mm == 5 and dd == 1) or (mm == 9 and dd == 16) or (mm == 12 and dd == 25)\r\n  movil    =\r\n    hoy0 == nesimoLunes(y: y, mes: \"02\", n: 1) or   // Constitución\r\n    hoy0 == nesimoLunes(y: y, mes: \"03\", n: 3) or   // Juárez\r\n    hoy0 == nesimoLunes(y: y, mes: \"11\", n: 3)      // Revolución\r\n  festivo  = fijo or movil\r\n\r\n  h   = date.hour(t: tLocal)\r\n  wdR = date.weekDay(t: tLocal)\r\n  wd  = if festivo then 0 else wdR   // festivo se trata como domingo\r\n\r\n  return\r\n    if temp == \"ver\" then\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h >= 1 and h < 6 then \"Base\"\r\n         else if h >= 20 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h >= 1 and h < 7 then \"Base\" else \"Intermedia\")\r\n       else\r\n        (if h < 19 then \"Base\" else \"Intermedia\"))\r\n    else if temp == \"inv\" then\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h < 6 then \"Base\"\r\n         else if h >= 18 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h < 8 then \"Base\"\r\n         else if h >= 19 and h < 21 then \"Punta\"\r\n         else if h >= 21 then \"Base\"\r\n         else \"Intermedia\")\r\n       else\r\n        (if h < 18 then \"Base\" else \"Intermedia\"))\r\n    else  // med: feb–mar y ago–oct\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h < 6 then \"Base\"\r\n         else if h >= 19 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h < 7 then \"Base\" else \"Intermedia\")\r\n       else\r\n        (if h < 19 or h >= 23 then \"Base\" else \"Intermedia\"))\r\n}\r\n\r\n// ── Esqueleto de bandas (con clasificación doble: actual + anterior) ──\r\nesqueleto = from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\" and r._field == \"u_kw\")\r\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: true, timeSrc: \"_start\")\r\n  |> group()\r\n  |> keep(columns: [\"_time\"])\r\n  |> map(fn: (r) => ({\r\n      _time: r._time,\r\n      banda: clasifica(t: r._time),\r\n      bandaPrev: clasifica(t: date.sub(d: 5m, from: r._time))\r\n  }))\r\n\r\nserie = (nombre) =>\r\n  esqueleto\r\n    |> map(fn: (r) => ({\r\n        _time: r._time,\r\n        _value: if r.banda == nombre or r.bandaPrev == nombre then 20000.0 else (float(v: \"NaN\")),\r\n        banda: nombre\r\n    }))\r\n    |> filter(fn: (r) => not exists r._value or r._value != r._value or r._value == 20000.0)\r\n    |> group(columns: [\"banda\"])\r\n\r\nunion(tables: [\r\n  serie(nombre: \"Base\"),\r\n  serie(nombre: \"Intermedia\"),\r\n  serie(nombre: \"Punta\")\r\n])",
+          "refId": "Barras de color"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": false,
+          "query": "from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\")\r\n  |> filter(fn: (r) => r._field == \"u_kw\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> group()\r\n  |> map(fn: (r) => ({ _time: r._time, _value: r._value, serie: \"Demanda CFE\" }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "KW CFE"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": false,
+          "query": "from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\")\r\n  |> filter(fn: (r) => r._field == \"gen_kw\")\r\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false, timeSrc: \"_start\")\r\n  |> group()\r\n  |> map(fn: (r) => ({ _time: r._time, _value: r._value, serie: \"Cogeneración\" }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "KW cogeneracion"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": false,
+          "query": "from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\")\r\n  |> filter(fn: (r) => r._field == \"u_kw\" or r._field == \"gen_kw\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> group(columns: [\"_field\"])\r\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\r\n  |> filter(fn: (r) => exists r.u_kw and exists r.gen_kw)\r\n  |> map(fn: (r) => ({\r\n      _time: r._time,\r\n      _value: r.u_kw + r.gen_kw,\r\n      serie: \"Carga total planta\"\r\n  }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "KW Carga Total"
+        }
+      ],
+      "title": "Cogeneración",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfsf0evoq45q8b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "dark-red",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "kW"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 13
+      },
+      "id": 21,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "query": "import \"date\"\r\n\r\n// ── Clasificador tarifario CFE (mismo del documento) ──\r\nnesimoLunes = (y, mes, n) => {\r\n  d1 = time(v: y + \"-\" + mes + \"-01T00:00:00Z\")\r\n  wd = date.weekDay(t: d1)\r\n  offset = (if wd <= 1 then 1 - wd else 8 - wd) + (n - 1) * 7\r\n  return date.add(d: duration(v: offset * 86400000000000), to: d1)\r\n}\r\n\r\nclasifica = (t) => {\r\n  tLocal = date.sub(d: 6h, from: t)\r\n  y = string(v: date.year(t: tLocal))\r\n  \r\n  abr1   = time(v: y + \"-04-01T00:00:00Z\")\r\n  wdA    = date.weekDay(t: abr1)\r\n  domAbr = date.add(d: duration(v: (if wdA == 0 then 0 else 7 - wdA) * 86400000000000), to: abr1)\r\n  oct31  = time(v: y + \"-10-31T00:00:00Z\")\r\n  domOct = date.sub(d: duration(v: date.weekDay(t: oct31) * 86400000000000), from: oct31)\r\n  feb1   = time(v: y + \"-02-01T00:00:00Z\")\r\n  ago1   = time(v: y + \"-08-01T00:00:00Z\")\r\n\r\n  temp =\r\n    if tLocal >= domAbr and tLocal < ago1 then \"ver\"\r\n    else if tLocal >= domOct or tLocal < feb1 then \"inv\"\r\n    else \"med\"\r\n\r\n  hoy0     = date.truncate(t: tLocal, unit: 1d)\r\n  mm       = date.month(t: tLocal)\r\n  dd       = date.monthDay(t: tLocal)\r\n  fijo     = (mm == 1 and dd == 1) or (mm == 5 and dd == 1) or (mm == 9 and dd == 16) or (mm == 12 and dd == 25)\r\n  movil    =\r\n    hoy0 == nesimoLunes(y: y, mes: \"02\", n: 1) or\r\n    hoy0 == nesimoLunes(y: y, mes: \"03\", n: 3) or\r\n    hoy0 == nesimoLunes(y: y, mes: \"11\", n: 3)\r\n  festivo  = fijo or movil\r\n\r\n  h   = date.hour(t: tLocal)\r\n  wdR = date.weekDay(t: tLocal)\r\n  wd  = if festivo then 0 else wdR\r\n\r\n  return\r\n    if temp == \"ver\" then\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h >= 1 and h < 6 then \"Base\"\r\n         else if h >= 20 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h >= 1 and h < 7 then \"Base\" else \"Intermedia\")\r\n       else\r\n        (if h < 19 then \"Base\" else \"Intermedia\"))\r\n    else if temp == \"inv\" then\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h < 6 then \"Base\"\r\n         else if h >= 18 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h < 8 then \"Base\"\r\n         else if h >= 19 and h < 21 then \"Punta\"\r\n         else if h >= 21 then \"Base\"\r\n         else \"Intermedia\")\r\n       else\r\n        (if h < 18 then \"Base\" else \"Intermedia\"))\r\n    else\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h < 6 then \"Base\"\r\n         else if h >= 19 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h < 7 then \"Base\" else \"Intermedia\")\r\n       else\r\n        (if h < 19 or h >= 23 then \"Base\" else \"Intermedia\"))\r\n}\r\n\r\n// ── Extraer año y mes del picker ──\r\nanioPicker = date.year(t: v.timeRangeStart)\r\nmesPicker  = date.month(t: v.timeRangeStart)\r\nmesPadded  = if mesPicker < 10 then \"0\" + string(v: mesPicker) else string(v: mesPicker)\r\n\r\n// ── Rango completo del mes actual ──\r\ninicioMes = time(v: string(v: anioPicker) + \"-\" + mesPadded + \"-01T00:00:00Z\")\r\nfinMes    = date.add(d: 1mo, to: inicioMes)\r\n\r\n// ── Query ──\r\nfrom(bucket: \"energia\")\r\n  |> range(start: inicioMes, stop: finMes)\r\n  |> filter(fn: (r) => r._measurement == \"modbus\" and r.name == \"pm8240_planta\")\r\n  |> filter(fn: (r) => r._field == \"potencia_activa_total_w\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> map(fn: (r) => ({\r\n      _time: r._time,\r\n      _value: r._value / 1000.0,\r\n      banda: clasifica(t: r._time)\r\n  }))\r\n  |> group()\r\n  |> filter(fn: (r) => r.banda == \"Punta\")\r\n  |> max(column: \"_value\")\r\n  |> map(fn: (r) => ({\r\n      _time: r._time,\r\n      hora_local: date.sub(d: 6h, from: r._time),\r\n      valor_pico_kw: r._value,\r\n      banda: r.banda\r\n  }))",
+          "refId": "A"
+        }
+      ],
+      "title": "Pringles - Max KW del mes (Punta)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfsf0evoq45q8b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 1,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "max": 7400,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Punta"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Base"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Demanda CFE\"}"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 16
+              },
+              {
+                "id": "custom.pointSize",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Kw CFE"
+              },
+              {
+                "id": "custom.lineInterpolation",
+                "value": "linear"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{banda=\"Punta\"}"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Punta"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Demanda CFE\"}"
+            },
+            "properties": [
+              {
+                "id": "custom.lineInterpolation",
+                "value": "linear"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Cogeneración\"}"
+            },
+            "properties": [
+              {
+                "id": "custom.lineInterpolation",
+                "value": "linear"
+              },
+              {
+                "id": "custom.axisColorMode",
+                "value": "text"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 25
+              },
+              {
+                "id": "displayName",
+                "value": "Kw Cogeneración"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{banda=\"Intermedia\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Intermedio"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{banda=\"Base\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Base"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Carga total planta\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Carga Total"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-purple",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 20
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineInterpolation",
+                "value": "linear"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Potencia\"}"
+            },
+            "properties": [
+              {
+                "id": "custom.fillOpacity",
+                "value": 21
+              },
+              {
+                "id": "displayName",
+                "value": "Carga Pringle"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Potencia\"}"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 20,
+        "x": 0,
+        "y": 25
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "query": "import \"date\"\r\n\r\n// ── Clasificador tarifario CFE (regiones Central/Norte/etc.) ──\r\n// Los timestamps en InfluxDB ahora son UTC real (colector_energia.py corregido).\r\n// México no observa horario de verano desde 2022 → offset fijo UTC-6 todo el año.\r\n\r\nnesimoLunes = (y, mes, n) => {\r\n  d1 = time(v: y + \"-\" + mes + \"-01T00:00:00Z\")\r\n  wd = date.weekDay(t: d1)\r\n  offset = (if wd <= 1 then 1 - wd else 8 - wd) + (n - 1) * 7\r\n  return date.add(d: duration(v: offset * 86400000000000), to: d1)\r\n}\r\n\r\nclasifica = (t) => {\r\n  // Convertimos a hora local (UTC-6 fijo) ANTES de sacar mes/día/hora.\r\n  tLocal = date.sub(d: 6h, from: t)\r\n\r\n  y = string(v: date.year(t: tLocal))\r\n\r\n  // bordes móviles de temporada (comparados en el mismo espacio \"local\")\r\n  abr1   = time(v: y + \"-04-01T00:00:00Z\")\r\n  wdA    = date.weekDay(t: abr1)\r\n  domAbr = date.add(d: duration(v: (if wdA == 0 then 0 else 7 - wdA) * 86400000000000), to: abr1)\r\n  oct31  = time(v: y + \"-10-31T00:00:00Z\")\r\n  domOct = date.sub(d: duration(v: date.weekDay(t: oct31) * 86400000000000), from: oct31)\r\n  feb1   = time(v: y + \"-02-01T00:00:00Z\")\r\n  ago1   = time(v: y + \"-08-01T00:00:00Z\")\r\n\r\n  temp =\r\n    if tLocal >= domAbr and tLocal < ago1 then \"ver\"\r\n    else if tLocal >= domOct or tLocal < feb1 then \"inv\"\r\n    else \"med\"\r\n\r\n  // festivos Art. 74 LFT (sin fracción IX): fijos + lunes móviles\r\n  hoy0     = date.truncate(t: tLocal, unit: 1d)\r\n  mm       = date.month(t: tLocal)\r\n  dd       = date.monthDay(t: tLocal)\r\n  fijo     = (mm == 1 and dd == 1) or (mm == 5 and dd == 1) or (mm == 9 and dd == 16) or (mm == 12 and dd == 25)\r\n  movil    =\r\n    hoy0 == nesimoLunes(y: y, mes: \"02\", n: 1) or   // Constitución\r\n    hoy0 == nesimoLunes(y: y, mes: \"03\", n: 3) or   // Juárez\r\n    hoy0 == nesimoLunes(y: y, mes: \"11\", n: 3)      // Revolución\r\n  festivo  = fijo or movil\r\n\r\n  h   = date.hour(t: tLocal)\r\n  wdR = date.weekDay(t: tLocal)\r\n  wd  = if festivo then 0 else wdR   // festivo se trata como domingo\r\n\r\n  return\r\n    if temp == \"ver\" then\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h >= 1 and h < 6 then \"Base\"\r\n         else if h >= 20 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h >= 1 and h < 7 then \"Base\" else \"Intermedia\")\r\n       else\r\n        (if h < 19 then \"Base\" else \"Intermedia\"))\r\n    else if temp == \"inv\" then\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h < 6 then \"Base\"\r\n         else if h >= 18 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h < 8 then \"Base\"\r\n         else if h >= 19 and h < 21 then \"Punta\"\r\n         else if h >= 21 then \"Base\"\r\n         else \"Intermedia\")\r\n       else\r\n        (if h < 18 then \"Base\" else \"Intermedia\"))\r\n    else  // med: feb–mar y ago–oct\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h < 6 then \"Base\"\r\n         else if h >= 19 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h < 7 then \"Base\" else \"Intermedia\")\r\n       else\r\n        (if h < 19 or h >= 23 then \"Base\" else \"Intermedia\"))\r\n}\r\n\r\n// ── Esqueleto de bandas (con clasificación doble: actual + anterior) ──\r\nesqueleto = from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\" and r._field == \"u_kw\")\r\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: true, timeSrc: \"_start\")\r\n  |> group()\r\n  |> keep(columns: [\"_time\"])\r\n  |> map(fn: (r) => ({\r\n      _time: r._time,\r\n      banda: clasifica(t: r._time),\r\n      bandaPrev: clasifica(t: date.sub(d: 5m, from: r._time))\r\n  }))\r\n\r\nserie = (nombre) =>\r\n  esqueleto\r\n    |> map(fn: (r) => ({\r\n        _time: r._time,\r\n        _value: if r.banda == nombre or r.bandaPrev == nombre then 7500.0 else (float(v: \"NaN\")),\r\n        banda: nombre\r\n    }))\r\n    |> filter(fn: (r) => not exists r._value or r._value != r._value or r._value == 7500.0)\r\n    |> group(columns: [\"banda\"])\r\n\r\nunion(tables: [\r\n  serie(nombre: \"Base\"),\r\n  serie(nombre: \"Intermedia\"),\r\n  serie(nombre: \"Punta\")\r\n])",
+          "refId": "Barras de color"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": false,
+          "query": "import \"date\"\r\n\r\nfrom(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"modbus\" and r.name == \"pm8240_planta\")\r\n  |> filter(fn: (r) => r._field == \"potencia_activa_total_w\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> group()\r\n  |> map(fn: (r) => ({ _time: r._time, _value: r._value / 1000.0, serie: \"Potencia\" }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "Pringles"
+        }
+      ],
+      "title": "Pringles",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfsf0evoq45q8b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 1,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "max": 7800,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Punta"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Base"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Demanda CFE\"}"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 16
+              },
+              {
+                "id": "custom.pointSize",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Kw CFE"
+              },
+              {
+                "id": "custom.lineInterpolation",
+                "value": "linear"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{banda=\"Punta\"}"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Punta"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Demanda CFE\"}"
+            },
+            "properties": [
+              {
+                "id": "custom.lineInterpolation",
+                "value": "linear"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Cogeneración\"}"
+            },
+            "properties": [
+              {
+                "id": "custom.lineInterpolation",
+                "value": "linear"
+              },
+              {
+                "id": "custom.axisColorMode",
+                "value": "text"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 25
+              },
+              {
+                "id": "displayName",
+                "value": "Kw Cogeneración"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{banda=\"Intermedia\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Intermedio"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{banda=\"Base\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Base"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Carga total planta\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Carga Total"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-purple",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 20
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineInterpolation",
+                "value": "linear"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Potencia\"}"
+            },
+            "properties": [
+              {
+                "id": "custom.fillOpacity",
+                "value": 21
+              },
+              {
+                "id": "displayName",
+                "value": "Carga Pringle"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Potencia ION\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Carga Total - Caseta Principal"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serie=\"Otra planta\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Nominal Graphic"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 20,
+        "x": 0,
+        "y": 37
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "query": "import \"date\"\r\n\r\n// ── Clasificador tarifario CFE (regiones Central/Norte/etc.) ──\r\n// Los timestamps en InfluxDB ahora son UTC real (colector_energia.py corregido).\r\n// México no observa horario de verano desde 2022 → offset fijo UTC-6 todo el año.\r\n\r\nnesimoLunes = (y, mes, n) => {\r\n  d1 = time(v: y + \"-\" + mes + \"-01T00:00:00Z\")\r\n  wd = date.weekDay(t: d1)\r\n  offset = (if wd <= 1 then 1 - wd else 8 - wd) + (n - 1) * 7\r\n  return date.add(d: duration(v: offset * 86400000000000), to: d1)\r\n}\r\n\r\nclasifica = (t) => {\r\n  // Convertimos a hora local (UTC-6 fijo) ANTES de sacar mes/día/hora.\r\n  tLocal = date.sub(d: 6h, from: t)\r\n\r\n  y = string(v: date.year(t: tLocal))\r\n\r\n  // bordes móviles de temporada (comparados en el mismo espacio \"local\")\r\n  abr1   = time(v: y + \"-04-01T00:00:00Z\")\r\n  wdA    = date.weekDay(t: abr1)\r\n  domAbr = date.add(d: duration(v: (if wdA == 0 then 0 else 7 - wdA) * 86400000000000), to: abr1)\r\n  oct31  = time(v: y + \"-10-31T00:00:00Z\")\r\n  domOct = date.sub(d: duration(v: date.weekDay(t: oct31) * 86400000000000), from: oct31)\r\n  feb1   = time(v: y + \"-02-01T00:00:00Z\")\r\n  ago1   = time(v: y + \"-08-01T00:00:00Z\")\r\n\r\n  temp =\r\n    if tLocal >= domAbr and tLocal < ago1 then \"ver\"\r\n    else if tLocal >= domOct or tLocal < feb1 then \"inv\"\r\n    else \"med\"\r\n\r\n  // festivos Art. 74 LFT (sin fracción IX): fijos + lunes móviles\r\n  hoy0     = date.truncate(t: tLocal, unit: 1d)\r\n  mm       = date.month(t: tLocal)\r\n  dd       = date.monthDay(t: tLocal)\r\n  fijo     = (mm == 1 and dd == 1) or (mm == 5 and dd == 1) or (mm == 9 and dd == 16) or (mm == 12 and dd == 25)\r\n  movil    =\r\n    hoy0 == nesimoLunes(y: y, mes: \"02\", n: 1) or   // Constitución\r\n    hoy0 == nesimoLunes(y: y, mes: \"03\", n: 3) or   // Juárez\r\n    hoy0 == nesimoLunes(y: y, mes: \"11\", n: 3)      // Revolución\r\n  festivo  = fijo or movil\r\n\r\n  h   = date.hour(t: tLocal)\r\n  wdR = date.weekDay(t: tLocal)\r\n  wd  = if festivo then 0 else wdR   // festivo se trata como domingo\r\n\r\n  return\r\n    if temp == \"ver\" then\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h >= 1 and h < 6 then \"Base\"\r\n         else if h >= 20 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h >= 1 and h < 7 then \"Base\" else \"Intermedia\")\r\n       else\r\n        (if h < 19 then \"Base\" else \"Intermedia\"))\r\n    else if temp == \"inv\" then\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h < 6 then \"Base\"\r\n         else if h >= 18 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h < 8 then \"Base\"\r\n         else if h >= 19 and h < 21 then \"Punta\"\r\n         else if h >= 21 then \"Base\"\r\n         else \"Intermedia\")\r\n       else\r\n        (if h < 18 then \"Base\" else \"Intermedia\"))\r\n    else  // med: feb–mar y ago–oct\r\n      (if wd >= 1 and wd <= 5 then\r\n        (if h < 6 then \"Base\"\r\n         else if h >= 19 and h < 22 then \"Punta\"\r\n         else \"Intermedia\")\r\n       else if wd == 6 then\r\n        (if h < 7 then \"Base\" else \"Intermedia\")\r\n       else\r\n        (if h < 19 or h >= 23 then \"Base\" else \"Intermedia\"))\r\n}\r\n\r\n// ── Esqueleto de bandas (con clasificación doble: actual + anterior) ──\r\nesqueleto = from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\" and r._field == \"u_kw\")\r\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: true, timeSrc: \"_start\")\r\n  |> group()\r\n  |> keep(columns: [\"_time\"])\r\n  |> map(fn: (r) => ({\r\n      _time: r._time,\r\n      banda: clasifica(t: r._time),\r\n      bandaPrev: clasifica(t: date.sub(d: 5m, from: r._time))\r\n  }))\r\n\r\nserie = (nombre) =>\r\n  esqueleto\r\n    |> map(fn: (r) => ({\r\n        _time: r._time,\r\n        _value: if r.banda == nombre or r.bandaPrev == nombre then 20000.0 else (float(v: \"NaN\")),\r\n        banda: nombre\r\n    }))\r\n    |> filter(fn: (r) => not exists r._value or r._value != r._value or r._value == 20000.0)\r\n    |> group(columns: [\"banda\"])\r\n\r\nunion(tables: [\r\n  serie(nombre: \"Base\"),\r\n  serie(nombre: \"Intermedia\"),\r\n  serie(nombre: \"Punta\")\r\n])",
+          "refId": "Barras de color"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": true,
+          "query": "from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\")\r\n  |> filter(fn: (r) => r._field == \"u_kw\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> group()\r\n  |> map(fn: (r) => ({ _time: r._time, _value: r._value, serie: \"Demanda CFE\" }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "KW CFE"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": true,
+          "query": "from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\")\r\n  |> filter(fn: (r) => r._field == \"gen_kw\")\r\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false, timeSrc: \"_start\")\r\n  |> group()\r\n  |> map(fn: (r) => ({ _time: r._time, _value: r._value, serie: \"Cogeneración\" }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "KW cogeneracion"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": true,
+          "query": "from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\")\r\n  |> filter(fn: (r) => r._field == \"u_kw\" or r._field == \"gen_kw\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> group(columns: [\"_field\"])\r\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\r\n  |> filter(fn: (r) => exists r.u_kw and exists r.gen_kw)\r\n  |> map(fn: (r) => ({\r\n      _time: r._time,\r\n      _value: r.u_kw + r.gen_kw,\r\n      serie: \"Carga total planta\"\r\n  }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "KW Carga Total"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": true,
+          "query": "import \"date\"\r\n\r\nfrom(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"modbus\" and r.name == \"pm8240_planta\")\r\n  |> filter(fn: (r) => r._field == \"potencia_activa_total_w\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> group()\r\n  |> map(fn: (r) => ({ _time: r._time, _value: r._value / 1000.0, serie: \"Potencia\" }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "KW Pringles"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": true,
+          "query": "from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"ion8650\" and r.log == \"Hist_high_Log\")\r\n  |> filter(fn: (r) => r._field == \"kW_tot_high\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> group()\r\n  |> map(fn: (r) => ({ _time: r._time, _value: r._value, serie: \"Potencia ION\" }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "caseta"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": false,
+          "query": "cfe = from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\" and r._field == \"u_kw\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> map(fn: (r) => ({ _time: r._time, _field: \"cfe\", _value: r._value }))\r\n\r\npm = from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"modbus\" and r.name == \"pm8240_planta\")\r\n  |> filter(fn: (r) => r._field == \"potencia_activa_total_w\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> map(fn: (r) => ({ _time: r._time, _field: \"pm\", _value: r._value / 1000.0 }))\r\n\r\nion = from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"ion8650\" and r.log == \"Hist_high_Log\")\r\n  |> filter(fn: (r) => r._field == \"kW_tot_high\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> map(fn: (r) => ({ _time: r._time, _field: \"ion\", _value: r._value }))\r\n\r\nunion(tables: [cfe, pm, ion])\r\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\r\n  |> filter(fn: (r) => exists r.cfe and exists r.pm and exists r.ion)\r\n  |> map(fn: (r) => ({ _time: r._time, _value: r.ion - r.pm - r.cfe, serie: \"Otra planta\" }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "Nominal Graphic"
+        }
+      ],
+      "title": "Graphic Packing",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfsf0evoq45q8b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "max": 7000,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 20,
+        "x": 0,
+        "y": 50
+      },
+      "id": 11,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": false,
+          "query": "from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\")\r\n  |> filter(fn: (r) => r._field == \"u_kw\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> group()\r\n  |> map(fn: (r) => ({ _time: r._time, _value: r._value, serie: \"Demanda CFE\" }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": false,
+          "query": "from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\")\r\n  |> filter(fn: (r) => r._field == \"gen_kw\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> group()\r\n  |> map(fn: (r) => ({ _time: r._time, _value: r._value, serie: \"Cogeneración\" }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": false,
+          "query": "from(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"energia_periodo\")\r\n  |> filter(fn: (r) => r._field == \"u_kw\" or r._field == \"gen_kw\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> group()\r\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\r\n  |> filter(fn: (r) => exists r.u_kw and exists r.gen_kw)\r\n  |> map(fn: (r) => ({\r\n      _time: r._time,\r\n      _value: r.u_kw + r.gen_kw,\r\n      serie: \"Carga total planta\"\r\n  }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfsf0evoq45q8b"
+          },
+          "hide": false,
+          "query": "import \"date\"\r\n\r\nfrom(bucket: \"energia\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"modbus\" and r.name == \"pm8240_planta\")\r\n  |> filter(fn: (r) => r._field == \"potencia_activa_total_w\")\r\n  |> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: \"_start\")\r\n  |> group()\r\n  |> map(fn: (r) => ({ _time: r._time, _value: r._value / 1000.0, serie: \"Potencia\" }))\r\n  |> group(columns: [\"serie\"])",
+          "refId": "Pringles"
+        }
+      ],
+      "title": "Demanda Total Caseta",
+      "type": "table"
+    }
+  ],
+  "preload": false,
+  "refresh": "",
+  "schemaVersion": 42,
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Medicion Electrica Total",
+  "uid": "adnffwp",
+  "version": 22
+}
