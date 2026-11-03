@@ -126,7 +126,6 @@ async function actualKelloggDemand() {
   const gasQuery = [
     `from(bucket: "${INFLUX_BUCKET}")`,
     '|> range(start: -30d)',
-    '|> filter(fn: (r) => r["_measurement"] == "collector_energia")',
     '|> filter(fn: (r) => r["_field"] == "SQLDB_GN_nm3")',
     '|> last()'
   ].join("\n");
