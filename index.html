@@ -280,15 +280,15 @@ input{font-family:inherit}
     <sc-if value="{{ isEK }}" hint-placeholder-val="{{ false }}">
       <div style="display:flex;flex-wrap:wrap;gap:16px">
         <div style="flex:2 1 520px;min-width:0;background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px">
-          <div style="display:flex;justify-content:space-between;gap:12px"><div><div style="font-size:14px;font-weight:600;color:#F1F5F9">Real-time Trend</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Plant load, cogeneration output and CFE import · 2 s sampling</div></div><span style="height:fit-content;font-size:10.5px;font-family:'JetBrains Mono',monospace;color:#10B981;border:1px solid rgba(16,185,129,0.3);border-radius:6px;padding:3px 8px">LIVE</span></div>
+          <div style="display:flex;justify-content:space-between;gap:12px"><div><div style="font-size:14px;font-weight:600;color:#F1F5F9">Real-time Trend</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Plant load, cogeneration output and CFE import</div></div><span style="height:fit-content;font-size:10.5px;font-family:'JetBrains Mono',monospace;color:#64748B;border:1px solid rgba(100,116,139,0.3);border-radius:6px;padding:3px 8px">Sin datos</span></div>
           <div data-chart="k_rt" style="height:290px;margin-top:8px"></div>
         </div>
         <div style="flex:1 1 300px;min-width:0;background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px;display:flex;flex-direction:column">
           <div style="font-size:14px;font-weight:600;color:#F1F5F9">Cogeneration Efficiency</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Total CHP efficiency (electrical + thermal)</div>
           <div data-chart="k_eff" style="height:220px;margin-top:4px"></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <div style="padding:10px 12px;border-radius:10px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2)"><div style="font-size:11px;color:#94A3B8">Electrical</div><div style="font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;color:#93C5FD">{{ effE }}%</div></div>
-            <div style="padding:10px 12px;border-radius:10px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2)"><div style="font-size:11px;color:#94A3B8">Thermal</div><div style="font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;color:#FCD34D">{{ effT }}%</div></div>
+            <div style="padding:10px 12px;border-radius:10px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2)"><div style="font-size:11px;color:#94A3B8">Electrical</div><div style="font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;color:#93C5FD">Sin datos</div></div>
+            <div style="padding:10px 12px;border-radius:10px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2)"><div style="font-size:11px;color:#94A3B8">Thermal</div><div style="font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;color:#FCD34D">Sin datos</div></div>
           </div>
         </div>
       </div>
@@ -445,7 +445,7 @@ const VIEWS={overview:{label:'Overview',icon:'icon-layout-dashboard',crumbs:['Ov
 VIEWS.trends={label:'Trends & Analytics',icon:'icon-chart-line',crumbs:['Trends & Analytics'],title:'Trends & Analytics',sub:'Load patterns, year-over-year comparison and energy intensity'};
 VIEWS.settings={label:'Settings',icon:'icon-settings',crumbs:['Settings'],title:'Settings',sub:'Data source and alarm configuration'};
 const NAV=[{items:['overview']},{u:'e',items:['e_general','e_kellogg','e_pringles']},{u:'w',items:['w_general','w_kellogg','w_pringles']},{u:'g',items:['g_general','g_kellogg','g_pringles']},{div:true,items:['trends','settings']}];
-const ST={Online:C.green,Warning:C.orange,Offline:C.red};
+const ST={Online:C.green,Warning:C.orange,Offline:C.red,'Sin datos':C.gray};
 const badge=(name,status,meta)=>{const c=ST[status];return {name,status,meta,color:c,bg:hexA(c,0.12),border:hexA(c,0.3)}};
 const w=(v,a,b,st)=>Math.min(b,Math.max(a,v));
 const f=(n,d)=>Number(n).toLocaleString('en-US',{minimumFractionDigits:d||0,maximumFractionDigits:d||0});
@@ -674,8 +674,8 @@ class Component extends DCLogic {
       isGeneral,fd:FD[u]||FD.e,genStatus:GEN_STATUS[u]||[],genAlerts:GEN_ALERTS[u]||[],
       hasCards:!isEnergy&&cards.length>0,cards:!isEnergy?cards:[],hasSiteStatus:!isEnergy&&!!SITE_STATUS[s.view],siteStatus:!isEnergy?(SITE_STATUS[s.view]||[]):[],
       isEK:s.view==='e_kellogg',isEP:s.view==='e_pringles',isTrends:s.view==='trends',isSettings:s.view==='settings',
-      effE:f(v.eff*0.432,1),effT:f(v.eff*0.568,1),
-      kAssets:[badge('Gas Turbine GT-1','Online',f(v.kCogen,2)+' MW · 9,840 rpm'),badge('Heat Recovery Steam Gen.','Online',f(v.steam,1)+' t/h · 10.2 bar'),badge('Auxiliary Boiler B-2','Warning','Stack temp 212 °C'),badge('CFE Tie Breaker 52-K','Online','Closed · '+f(kImp,2)+' MW'),badge('Absorption Chiller CH-1','Offline','Scheduled maintenance')],
+      effE:'Sin datos',effT:'Sin datos',
+      kAssets:['Gas Turbine GT-1','Heat Recovery Steam Gen.','Auxiliary Boiler B-2','CFE Tie Breaker 52-K','Absorption Chiller CH-1'].map(name=>badge(name,'Sin datos','Sin datos')),
       pAssets:[badge('Main Substation 13.2 kV','Online',f(v.pP,2)+' MW'),badge('Fryer Line 1','Online','1.18 MW'),badge('Fryer Line 2','Online','1.07 MW'),badge('Capacitor Bank CB-3','Warning','Step 4 not responding'),badge('Air Compressors','Online','0.42 MW · 7.1 bar')],
       pq,
       dbFields:[{label:'Server URL',ph:'https://influxdb.plant.local:8086'},{label:'Organization',ph:'food-manufacturing'},{label:'Bucket',ph:'utilities_telemetry'},{label:'API Token',ph:'••••••••••••••••••••'},{label:'Measurements',ph:'energy, water, gas'}],
