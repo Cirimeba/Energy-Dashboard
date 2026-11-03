@@ -145,38 +145,6 @@ input{font-family:inherit}
       </div>
     </sc-if>
 
-    <sc-if value="{{ isRealEnergy }}" hint-placeholder-val="{{ false }}">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
-        <div style="padding:16px;border-radius:16px;border:1px solid rgba(148,163,184,0.12);background:rgba(30,41,59,0.55)">
-          <div style="font-size:12px;color:#94A3B8">Consumo CFE total</div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:600;color:#F8FAFC;margin-top:8px">{{ realCfe }} kW</div>
-          <div style="font-size:11px;color:#64748B;margin-top:4px">Kellogg’s + Pringles</div>
-        </div>
-        <div style="padding:16px;border-radius:16px;border:1px solid rgba(16,185,129,0.20);background:rgba(16,185,129,0.06)">
-          <div style="font-size:12px;color:#94A3B8">Cogeneración</div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:600;color:#F8FAFC;margin-top:8px">{{ realCogeneration }} kW</div>
-          <div style="font-size:11px;color:#64748B;margin-top:4px">Generación eléctrica actual</div>
-        </div>
-        <div style="padding:16px;border-radius:16px;border:1px solid rgba(59,130,246,0.20);background:rgba(59,130,246,0.06)">
-          <div style="font-size:12px;color:#94A3B8">Carga Pringles</div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:600;color:#F8FAFC;margin-top:8px">{{ realPringles }} kW</div>
-          <div style="font-size:11px;color:#64748B;margin-top:4px">Potencia activa total</div>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:14px">
-        <div style="padding:18px;border-radius:16px;border:1px solid rgba(148,163,184,0.12);background:rgba(30,41,59,0.55)">
-          <div style="font-size:14px;font-weight:600;color:#F1F5F9">Kellogg’s</div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:22px;color:#93C5FD;margin-top:12px">{{ realKelloggs }} kW</div>
-          <div style="font-size:11px;color:#64748B;margin-top:4px">Generación acumulada actual: {{ realGenerationKwh }} kWh</div>
-        </div>
-        <div style="padding:18px;border-radius:16px;border:1px solid rgba(148,163,184,0.12);background:rgba(30,41,59,0.55)">
-          <div style="font-size:14px;font-weight:600;color:#F1F5F9">Pringles eléctrico</div>
-          <div style="font-size:12px;color:#94A3B8;margin-top:10px">Corriente {{ realCurrent }} A · Voltaje {{ realVoltage }} V</div>
-          <div style="font-size:12px;color:#94A3B8;margin-top:6px">Factor de potencia {{ realPf }} · Frecuencia {{ realFreq }} Hz</div>
-        </div>
-      </div>
-    </sc-if>
-
     <sc-if value="{{ isGeneral }}" hint-placeholder-val="{{ false }}">
       <div style="display:flex;flex-wrap:wrap;gap:16px">
         <div style="flex:1.7 1 560px;min-width:0;background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px">
@@ -522,7 +490,7 @@ class Component extends DCLogic {
       rt.wk.push(+(38.4+(Math.random()-0.5)*2.4).toFixed(1));rt.ct.push(+(12.4+(Math.random()-0.5)*1).toFixed(1));rt.gt.push(Math.round(c*266));rt.aux.push(Math.round(212+(Math.random()-0.5)*16));rt.oven.push(Math.round(184+(Math.random()-0.5)*14))}
     const d=this.derive(v),hist={};
     Object.keys(d).forEach(k=>{hist[k]=[...Array(24)].map((_,i)=>+(d[k]*(1+(Math.random()-0.5)*0.05)*(CUM.includes(k)?(0.5+i/46):1)).toFixed(3))});
-    this.state={view:'overview',range:'today',collapsed:false,paused:false,realData:false,now:new Date(),v,rt,hist};
+    this.state={view:'overview',range:'today',collapsed:false,paused:false,now:new Date(),v,rt,hist};
     this.spCol={};
   }
   derive(v){
@@ -535,56 +503,14 @@ class Component extends DCLogic {
     if(window.innerWidth<1100) this.setState({collapsed:true});
     this.ro=new ResizeObserver(es=>requestAnimationFrame(()=>es.forEach(e=>{const c=window.echarts&&echarts.getInstanceByDom(e.target);c&&c.resize()})));
     this.timer=setInterval(()=>this.state.paused?null:this.tick(),2000);
-    this.influxTimer=setInterval(()=>this.loadInflux(),10000);
-    this.loadInflux();
     this.waitCharts();
     if(this.hdr){this.hro=new ResizeObserver(()=>requestAnimationFrame(()=>{if(!this.hdr)return;const h=Math.round(this.hdr.getBoundingClientRect().height);if(h!==this.state.hH)this.setState({hH:h})}));this.hro.observe(this.hdr)}
   }
   headerRef=el=>{this.hdr=el};
-  componentWillUnmount(){clearInterval(this.timer);clearInterval(this.influxTimer);this.hro&&this.hro.disconnect();this.ro&&this.ro.disconnect()}
-  async loadInflux(){
-    try{
-      const response=await fetch('/api/telemetry',{cache:'no-store'});
-      if(!response.ok)return;
-      const data=await response.json();
-      if(!data.configured||data.source!=='influxdb')return;
-      const historyResponse=await fetch('/api/energy-history?range=-30d',{cache:'no-store'});
-      const history=historyResponse.ok?await historyResponse.json():{series:{}};
-      this.setState(s=>{
-        const v={...s.v};
-        Object.keys(v).forEach(key=>{if(typeof v[key]==='number')v[key]=0});
-        const kelloggs=data.kelloggs||{},pringles=data.pringles||{};
-        v.kE=kelloggs.generationKwh||0;
-        v.pE=kelloggs.cfeKwh||0;
-        v.gas=kelloggs.gasNm3||0;
-        v.steam=kelloggs.steamKgh||0;
-        v.pP=pringles.activePowerKw||0;
-        v.pf=pringles.pf||0;
-        v.freq=pringles.freq||0;
-        v.va=pringles.voltageLnV||pringles.voltageLlV||0;
-        v.vb=v.va;v.vc=v.va;
-        v.total=pringles.activePowerKw||0;
-        const energyReal={
-          kelloggsCfeKw:kelloggs.cfeKwh||0,
-          kelloggsGenerationKw:kelloggs.generationKwh||0,
-          kelloggsGasNm3:kelloggs.gasNm3||0,
-          pringlesKw:pringles.activePowerKw||0,
-          cfeKw:(pringles.activePowerKw||0)+(kelloggs.cfeKwh||0),
-          cogenerationKw:kelloggs.generationKwh||0,
-          pringlesCurrentA:pringles.currentA||0,
-          pringlesVoltageV:pringles.voltageLnV||pringles.voltageLlV||0,
-          pringlesPf:pringles.pf||0,
-          pringlesFreq:pringles.freq||0,
-          series:history.series||{}
-        };
-        return {v,realData:true,energyReal};
-      });
-    }catch(error){console.warn('Unable to refresh telemetry from InfluxDB:',error);}
-  }
+  componentWillUnmount(){clearInterval(this.timer);this.hro&&this.hro.disconnect();this.ro&&this.ro.disconnect()}
   componentDidUpdate(){this.sync()}
   waitCharts(){if(window.echarts){this.ready=true;this.sync()}else setTimeout(()=>this.waitCharts(),120)}
   tick(){
-    if(this.state.realData) return;
     this.setState(s=>{
       const v={...s.v},dt=2/3600;
       v.kLoad=w(v.kLoad,7.6,9.2,0.18);v.kCogen=w(v.kCogen,5.7,6.5,0.12);v.gas=Math.round(v.kCogen*266+(Math.random()-0.5)*20);
@@ -704,7 +630,7 @@ class Component extends DCLogic {
 
     const navGroups=NAV.map(g=>({showTitle:!!g.u&&!s.collapsed,showDivider:(!!g.u&&s.collapsed)||(g.div&&!g.u),title:g.u?UT[g.u].name.toUpperCase():'',icon:g.u?UT[g.u].icon:'',color:g.u?UT[g.u].color:'#64748B',
       items:g.items.map(id=>{const x=VIEWS[id],a=id===s.view;const icon=g.u&&id.endsWith('general')?UT[g.u].icon:x.icon;return {label:x.label,full:x.title,icon,go:()=>this.go(id),expanded:!s.collapsed,justify:s.collapsed?'center':'flex-start',pl:(g.u&&!s.collapsed)?'20px':'12px',bg:a?'linear-gradient(90deg,rgba(59,130,246,0.22),rgba(59,130,246,0.06))':'transparent',color:a?'#F8FAFC':'#94A3B8',border:a?'rgba(59,130,246,0.35)':'transparent',shadow:a?'inset 2px 0 0 #3B82F6':'none'}})}));
-    const cur=VIEWS[s.view],u=s.view[1]==='_'?s.view[0]:null,isEnergy=s.view.startsWith('e_'),isGeneral=!!u&&s.view.endsWith('general')&&!isEnergy;
+    const cur=VIEWS[s.view],u=s.view[1]==='_'?s.view[0]:null,isGeneral=!!u&&s.view.endsWith('general');
 
     const site=(c,name,status,meta)=>badge(name,status,meta);
     const FD={
@@ -772,19 +698,9 @@ class Component extends DCLogic {
       sideW:s.collapsed?'72px':'236px',expanded:!s.collapsed,navGroups,
       crumbs:cur.crumbs,pageTitle:cur.title,pageSub:cur.sub,
       isOverview:s.view==='overview',ovGroups,
-      isRealEnergy:isEnergy&&!!s.energyReal,
-      realCfe:f(s.energyReal?(s.energyReal.cfeKw||0):0,2),
-      realCogeneration:f(s.energyReal?(s.energyReal.cogenerationKw||0):0,2),
-      realPringles:f(s.energyReal?(s.energyReal.pringlesKw||0):0,2),
-      realKelloggs:f(s.energyReal?(s.energyReal.kelloggsCfeKw||0):0,2),
-      realGenerationKwh:f(s.energyReal?(s.energyReal.kelloggsGenerationKw||0):0,0),
-      realCurrent:f(s.energyReal?(s.energyReal.pringlesCurrentA||0):0,1),
-      realVoltage:f(s.energyReal?(s.energyReal.pringlesVoltageV||0):0,1),
-      realPf:f(s.energyReal?(s.energyReal.pringlesPf||0):0,3),
-      realFreq:f(s.energyReal?(s.energyReal.pringlesFreq||0):0,2),
-      hasKpis:!isEnergy&&!!kp[s.view],kpis:!isEnergy?(kp[s.view]||[]):[],
+      hasKpis:!!kp[s.view],kpis:kp[s.view]||[],
       isGeneral,fd:FD[u]||FD.e,genStatus:GEN_STATUS[u]||[],genAlerts:GEN_ALERTS[u]||[],
-      hasCards:!isEnergy&&cards.length>0,cards:!isEnergy?cards:[],hasSiteStatus:!isEnergy&&!!SITE_STATUS[s.view],siteStatus:!isEnergy?(SITE_STATUS[s.view]||[]):[],
+      hasCards:cards.length>0,cards,hasSiteStatus:!!SITE_STATUS[s.view],siteStatus:SITE_STATUS[s.view]||[],
       isEK:s.view==='e_kellogg',isEP:s.view==='e_pringles',isTrends:s.view==='trends',isSettings:s.view==='settings',
       effE:f(v.eff*0.432,1),effT:f(v.eff*0.568,1),
       kAssets:[badge('Gas Turbine GT-1','Online',f(v.kCogen,2)+' MW · 9,840 rpm'),badge('Heat Recovery Steam Gen.','Online',f(v.steam,1)+' t/h · 10.2 bar'),badge('Auxiliary Boiler B-2','Warning','Stack temp 212 °C'),badge('CFE Tie Breaker 52-K','Online','Closed · '+f(kImp,2)+' MW'),badge('Absorption Chiller CH-1','Offline','Scheduled maintenance')],
