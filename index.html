@@ -473,12 +473,14 @@ class Component extends DCLogic {
     if(window.innerWidth<1100) this.setState({collapsed:true});
     this.ro=new ResizeObserver(es=>requestAnimationFrame(()=>es.forEach(e=>{const c=window.echarts&&echarts.getInstanceByDom(e.target);c&&c.resize()})));
     this.loadKelloggActual();
-    this.actualTimer=setInterval(()=>this.loadKelloggActual(),10000);
+    this.actualTimer=setInterval(()=>this.loadKelloggActual(),5000);
+    this.actualVisibility=()=>{if(!document.hidden) this.loadKelloggActual()};
+    document.addEventListener('visibilitychange',this.actualVisibility);
     this.waitCharts();
     if(this.hdr){this.hro=new ResizeObserver(()=>requestAnimationFrame(()=>{if(!this.hdr)return;const h=Math.round(this.hdr.getBoundingClientRect().height);if(h!==this.state.hH)this.setState({hH:h})}));this.hro.observe(this.hdr)}
   }
   headerRef=el=>{this.hdr=el};
-  componentWillUnmount(){clearInterval(this.actualTimer);this.hro&&this.hro.disconnect();this.ro&&this.ro.disconnect()}
+  componentWillUnmount(){clearInterval(this.actualTimer);document.removeEventListener('visibilitychange',this.actualVisibility);this.hro&&this.hro.disconnect();this.ro&&this.ro.disconnect()}
   async loadKelloggActual(){
     try{
       const response=await fetch(`/api/actual?t=${Date.now()}`,{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
