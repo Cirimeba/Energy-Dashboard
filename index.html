@@ -481,7 +481,7 @@ class Component extends DCLogic {
   componentWillUnmount(){clearInterval(this.actualTimer);this.hro&&this.hro.disconnect();this.ro&&this.ro.disconnect()}
   async loadKelloggActual(){
     try{
-      const response=await fetch('/api/actual',{cache:'no-store'});
+      const response=await fetch(`/api/actual?t=${Date.now()}`,{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
       if(!response.ok){this.setState({kelloggActual:null});return}
       const data=await response.json();
       this.setState({

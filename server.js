@@ -163,7 +163,7 @@ http.createServer(async (req, res) => {
   if (url.pathname === "/api/actual") {
     try {
       const data = await actualKelloggDemand();
-      res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-store" });
+      res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-store, no-cache, must-revalidate", "Pragma": "no-cache", "Expires": "0" });
       res.end(JSON.stringify(data === null ? { value: null } : data));
     } catch (error) {
       res.writeHead(500, { "Content-Type": "application/json", "Cache-Control": "no-store" });
