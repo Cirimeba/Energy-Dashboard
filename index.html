@@ -414,57 +414,13 @@ input{font-family:inherit}
 <script type="text/x-dc" data-dc-script>
 const C={blue:'#3B82F6',green:'#10B981',orange:'#F59E0B',red:'#EF4444',gray:'#94A3B8',sky:'#60A5FA',water:'#38BDF8',text:'#E2E8F0',grid:'rgba(148,163,184,0.09)'};
 const hexA=(h,a)=>{const n=parseInt(h.slice(1),16);return `rgba(${n>>16},${(n>>8)&255},${n&255},${a})`};
-let _s=11;const R=()=>{_s=(_s*16807)%2147483647;return(_s-1)/2147483646};
 const pad=n=>String(n).padStart(2,'0');
 const H=[...Array(24)].map((_,i)=>pad(i)+':00');
 const Q=[...Array(96)].map((_,i)=>pad(Math.floor(i/4))+':'+pad(i%4*15));
-const sh=h=>(h>=6&&h<22)?1:0;
-const sum2=(a,b)=>a.map((x,i)=>+(x+b[i]).toFixed(2));
-const noisy=(a,k)=>a.map(x=>+(x*(1+(R()-0.55)*k)).toFixed(2));
-// energy
-const kL=H.map((_,h)=>+(7.3+0.8*sh(h)+0.35*Math.sin(h/24*Math.PI*2-1.2)+R()*0.3).toFixed(2));
-const kC=H.map(()=>+(5.95+R()*0.4).toFixed(2));
-const pL=H.map((_,h)=>+(2.5+1.1*sh(h)+0.25*Math.sin(h/2.5)+R()*0.2).toFixed(2));
-const tT=sum2(kL,pL),yT=noisy(tT,0.07);
-const gasH=H.map((_,h)=>Math.round(kC[h]*266+R()*40));
-const steamH=H.map((_,h)=>+(11.6+1.6*sh(h)+R()*0.8).toFixed(1));
-const pQ=Q.map((_,i)=>{const h=i/4;return +(2.45+1.15*sh(Math.floor(h))+0.3*Math.sin(h/2)+R()*0.28).toFixed(2)});
-const dQ=Q.map((_,i)=>+(kL[Math.floor(i/4)]+pQ[i]+(R()-0.5)*0.4).toFixed(2));
-const D30=[...Array(30)].map((_,i)=>{const d=new Date(2026,8,29+i);return (d.getMonth()+1)+'/'+d.getDate()});
-const D7=D30.slice(-7);
-const wk=(i,base,amp,drop)=>base+R()*amp-(i%7===4?drop:0);
-const kGen30=D30.map((_,i)=>+wk(i,138,14,9).toFixed(1));
-const pDay30=D30.map((_,i)=>+wk(i,84,7,13).toFixed(1));
-const kDay30=D30.map((_,i)=>+wk(i,192,12,15).toFixed(1));
 const M=['Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'];
-const mK=M.map((_,i)=>Math.round(5750+R()*500+(i>=5&&i<=8?250:0)));
-const mP=M.map(()=>Math.round(2420+R()*260));
-const mC=M.map(()=>Math.round(4250+R()*300));
 const MY=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const y25=MY.map((_,i)=>Math.round(8450+R()*500+(i>=4&&i<=7?300:0)));
-const y26=MY.slice(0,10).map((_,i)=>Math.round(y25[i]*(0.94+R()*0.04)));
-const secK=M.map(()=>Math.round(605+R()*30)),secP=M.map(()=>Math.round(870+R()*35));
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-const heat=[];DAYS.forEach((_,d)=>H.forEach((_,h)=>heat.push([h,d,+((tT[h])*(d===6?0.8:d===5?0.9:1)+(R()-0.5)*0.5).toFixed(2)])));
-// water (m³)
-const wKH=H.map((_,h)=>+(33+6*sh(h)+2*Math.sin(h/3)+R()*2).toFixed(1));
-const wPH=H.map((_,h)=>+(16.5+5.5*sh(h)+([7,15,23].includes(h)?7:0)+R()*1.5).toFixed(1));
-const wTH=sum2(wKH,wPH),wYH=noisy(wTH,0.08);
-const wK30=D30.map((_,i)=>Math.round(wk(i,880,70,80))),wP30=D30.map((_,i)=>Math.round(wk(i,510,50,60)));
-const wKM=M.map(()=>Math.round(26200+R()*1800)),wPM=M.map(()=>Math.round(15200+R()*1200));
-const wWWM=M.map((_,i)=>Math.round((wKM[i]+wPM[i])*(0.7+R()*0.04))),reuseM=M.map((_,i)=>+(14+i*0.4+R()*1.5).toFixed(1));
 const USES=['Process','CIP cleaning','Cooling','Boiler makeup','Sanitary'],UCOL=[C.water,C.green,C.blue,C.orange,'#64748B'];
-const useK=[236,81,168,87,40],useP=[118,108,63,31,28];
-// gas (Nm³)
-const auxH=H.map((_,h)=>Math.round(180+40*sh(h)+R()*20)),ovenH=H.map((_,h)=>Math.round(140+60*sh(h)+R()*20));
-const gKH=H.map((_,h)=>gasH[h]+auxH[h]+ovenH[h]);
-const gPH=H.map((_,h)=>Math.round(290+95*sh(h)+R()*30));
-const gTH=sum2(gKH,gPH),gYH=noisy(gTH,0.05).map(Math.round);
-const gK30=D30.map((_,i)=>+wk(i,47.5,3,4).toFixed(1)),gP30=D30.map((_,i)=>+wk(i,8.6,0.7,1.5).toFixed(1));
-const gGT30=gK30.map(x=>+(x*0.81).toFixed(1));
-const gKM=M.map(()=>Math.round(1400+R()*90)),gPM=M.map(()=>Math.round(250+R()*25));
-const gPress=H.map(()=>+(4.12+R()*0.18).toFixed(2));
-const SPS={secK,secP,lf:[80,81,83,82,81,84,83,82,82,83,82,82.4],peak:[13.1,13.4,13.2,13.6,13.5,13.8,13.9,13.7,13.4,13.5,13.6,13.62],yoy:y26.map((v,i)=>+((v/y25[i]-1)*100).toFixed(1)),self:mC.map((c,i)=>+(c/(mK[i]+mP[i])*100).toFixed(1))};
 const TT={trigger:'axis',backgroundColor:'rgba(15,23,42,0.96)',borderColor:'rgba(148,163,184,0.22)',borderWidth:1,padding:[8,12],textStyle:{color:C.text,fontSize:12,fontFamily:'IBM Plex Sans'},axisPointer:{type:'line',lineStyle:{color:'rgba(148,163,184,0.35)'}}};
 const TI={trigger:'item',backgroundColor:'rgba(15,23,42,0.96)',borderColor:'rgba(148,163,184,0.22)',textStyle:{color:C.text,fontSize:12}};
 const LG={top:0,right:0,itemWidth:10,itemHeight:6,icon:'roundRect',itemGap:14,textStyle:{color:C.gray,fontSize:11}};
@@ -500,15 +456,11 @@ const col=(c)=>({c,cA:hexA(c,0.18),cB:hexA(c,0.5),cT:c});
 class Component extends DCLogic {
   constructor(p){
     super(p);
-    const v={kLoad:8.42,kCogen:6.18,gas:1652,steam:12.8,kE:98420,pP:3.62,pE:52310,pM:2140.6,pMax:4.21,pf:0.962,va:13.24,vb:13.19,vc:13.21,freq:60.0,eff:78.4,thdV:2.1,thdI:4.8,unb:0.8,
-      wK:38.4,wP:21.7,wKTod:584,wPTod:331,wMon:39820,wWW:42.1,reuse:18.6,ct:12.4,hrsg:5.8,tank:76,cip:94,wPress:4.1,
-      aux:212,oven:184,fry:268,pboil:96,gPress:4.21,gKTod:30180,gPTod:5460,gMon:1.452e6};
-    const now=Date.now(),rt={t:[],l:[],c:[],g:[],wk:[],ct:[],gt:[],aux:[],oven:[]};
-    for(let i=59;i>=0;i--){const l=8.42,c=6.18;rt.t.push(tstr(new Date(now-i*2000)));rt.l.push(l);rt.c.push(c);rt.g.push(+(l-c).toFixed(2));
-      rt.wk.push(38.4);rt.ct.push(12.4);rt.gt.push(Math.round(c*266));rt.aux.push(212);rt.oven.push(184)}
-    const d=this.derive(v),hist={};
-    Object.keys(d).forEach(k=>{hist[k]=[...Array(24)].map((_,i)=>+(d[k]*(CUM.includes(k)?(0.5+i/46):1)).toFixed(3))});
-    this.state={view:'overview',range:'today',collapsed:false,paused:false,grafanaPanels:[],now:new Date(),v,rt,hist};
+    const v={kLoad:0,kCogen:0,gas:0,steam:0,kE:0,pP:0,pE:0,pM:0,pMax:0,pf:0,va:0,vb:0,vc:0,freq:0,eff:0,thdV:0,thdI:0,unb:0,
+      wK:0,wP:0,wKTod:0,wPTod:0,wMon:0,wWW:0,reuse:0,ct:0,hrsg:0,tank:0,cip:0,wPress:0,
+      aux:0,oven:0,fry:0,pboil:0,gPress:0,gKTod:0,gPTod:0,gMon:0};
+    const rt={t:[],l:[],c:[],g:[],wk:[],ct:[],gt:[],aux:[],oven:[]},hist={};
+    this.state={view:'overview',range:'today',collapsed:false,paused:false,grafanaPanels:[],kelloggActual:null,now:new Date(),v,rt,hist};
     this.spCol={};
   }
   derive(v){
@@ -520,51 +472,22 @@ class Component extends DCLogic {
   componentDidMount(){
     if(window.innerWidth<1100) this.setState({collapsed:true});
     this.ro=new ResizeObserver(es=>requestAnimationFrame(()=>es.forEach(e=>{const c=window.echarts&&echarts.getInstanceByDom(e.target);c&&c.resize()})));
-    this.loadGrafana();
+    this.loadKelloggActual();
     this.waitCharts();
     if(this.hdr){this.hro=new ResizeObserver(()=>requestAnimationFrame(()=>{if(!this.hdr)return;const h=Math.round(this.hdr.getBoundingClientRect().height);if(h!==this.state.hH)this.setState({hH:h})}));this.hro.observe(this.hdr)}
   }
   headerRef=el=>{this.hdr=el};
-  componentWillUnmount(){clearInterval(this.timer);this.hro&&this.hro.disconnect();this.ro&&this.ro.disconnect()}
-  async loadGrafana(){
-    const ids={e_general:['2','18','25'],e_kellogg:['13','15','24'],e_pringles:['10','21']}[this.state.view]||[];
-    const panels=await Promise.all(ids.map(async id=>{
-      const response=await fetch(`/api/panels/${id}?start=-24h&stop=now()&window=5m`);
-      if(!response.ok)return {title:`Panel ${id}`,targets:[{refId:'Estado',value:'Sin datos'}]};
-      const panel=await response.json();
-      const targets=(panel.targets||[]).map(target=>{
-        if(target.error)return {refId:target.refId,value:'Error: '+target.error};
-        const rows=target.data||[];
-        if(!rows.length)return {refId:target.refId,value:'Sin datos'};
-        const last=rows[rows.length-1];
-        const n=Number(last._value);
-        return {refId:target.refId,value:Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:3}):'Sin datos'};
-      });
-      return {title:panel.title||`Panel ${id}`,targets:targets.length?targets:[{refId:'Estado',value:'Sin datos'}]};
-    }));
-    this.setState({grafanaPanels:panels});
+  componentWillUnmount(){this.hro&&this.hro.disconnect();this.ro&&this.ro.disconnect()}
+  async loadKelloggActual(){
+    try{
+      const response=await fetch('/api/actual',{cache:'no-store'});
+      if(!response.ok){this.setState({kelloggActual:null});return}
+      const data=await response.json();
+      this.setState({kelloggActual:Number.isFinite(data.value)?data.value:null});
+    }catch(error){this.setState({kelloggActual:null})}
   }
   componentDidUpdate(){this.sync()}
   waitCharts(){if(window.echarts){this.ready=true;this.sync()}else setTimeout(()=>this.waitCharts(),120)}
-  tick(){
-    return;
-    this.setState(s=>{
-      const v={...s.v},dt=2/3600;
-      v.kLoad=w(v.kLoad,7.6,9.2,0.18);v.kCogen=w(v.kCogen,5.7,6.5,0.12);v.gas=Math.round(v.kCogen*266);
-      v.steam=w(v.steam,11.5,14.5,0.2);v.kE+=v.kCogen*1000*dt;
-      v.pP=w(v.pP,3.1,4.15,0.12);v.pE+=v.pP*1000*dt;v.pM+=v.pP*dt;v.pMax=Math.max(v.pMax,v.pP);
-      v.pf=w(v.pf,0.94,0.985,0.004);v.va=w(v.va,13.1,13.35,0.02);v.vb=w(v.vb,13.1,13.35,0.02);v.vc=w(v.vc,13.1,13.35,0.02);
-      v.freq=w(v.freq,59.96,60.04,0.01);v.eff=w(v.eff,75,81,0.4);v.thdV=w(v.thdV,1.6,2.8,0.1);v.thdI=w(v.thdI,3.8,6.2,0.2);v.unb=w(v.unb,0.4,1.3,0.06);
-      v.wK=w(v.wK,34,43,0.8);v.wP=w(v.wP,17,28,0.8);v.wKTod+=v.wK*dt;v.wPTod+=v.wP*dt;v.wMon+=(v.wK+v.wP)*dt;v.wWW=w(v.wWW,38,47,0.6);v.reuse=w(v.reuse,16,21,0.2);
-      v.ct=w(v.ct,10.5,14.5,0.3);v.hrsg=w(v.hrsg,5,6.6,0.15);v.tank=w(v.tank,68,84,0.4);v.cip+=v.wP*0.3*dt;v.wPress=w(v.wPress,3.8,4.4,0.04);
-      v.aux=Math.round(w(v.aux,190,240,8));v.oven=Math.round(w(v.oven,160,210,7));v.fry=Math.round(w(v.fry,240,300,8));v.pboil=Math.round(w(v.pboil,80,112,5));v.gPress=w(v.gPress,4.05,4.35,0.03);
-      v.gKTod+=(v.gas+v.aux+v.oven)*dt;v.gPTod+=(v.fry+v.pboil)*dt;v.gMon+=(v.gas+v.aux+v.oven+v.fry+v.pboil)*dt;
-      const now=new Date(),sl=(a,x)=>[...a.slice(1),x];
-      const rt={t:sl(s.rt.t,tstr(now)),l:sl(s.rt.l,+v.kLoad.toFixed(2)),c:sl(s.rt.c,+v.kCogen.toFixed(2)),g:sl(s.rt.g,+(v.kLoad-v.kCogen).toFixed(2)),wk:sl(s.rt.wk,+v.wK.toFixed(1)),ct:sl(s.rt.ct,+v.ct.toFixed(1)),gt:sl(s.rt.gt,v.gas),aux:sl(s.rt.aux,v.aux),oven:sl(s.rt.oven,v.oven)};
-      const d=this.derive(v),hist={};Object.keys(d).forEach(k=>{hist[k]=sl(s.hist[k],+d[k].toFixed(3))});
-      return {v,rt,hist,now};
-    });
-  }
   sync(){
     if(!this.ready) return;
     document.querySelectorAll('[data-chart]').forEach(el=>{
@@ -572,12 +495,15 @@ class Component extends DCLogic {
       let c=echarts.getInstanceByDom(el);
       if(!c){c=echarts.init(el,null,{renderer:'canvas'});this.ro.observe(el)}
       const fresh=el.dataset.cid!==id;
-      if(fresh||id.startsWith('sp_')||LIVE.includes(id)){const o=this.opt(id);if(o){c.setOption(o,fresh);el.dataset.cid=id}}
+      if(fresh||id.startsWith('sp_')||LIVE.includes(id)){
+        c.setOption({animation:false,grid:{left:12,right:12,top:20,bottom:20},xAxis:{show:false},yAxis:{show:false},graphic:{type:'text',left:'center',top:'middle',style:{text:'Sin datos',fill:'#64748B',fontSize:12,fontFamily:'IBM Plex Sans'}}},true);
+        el.dataset.cid=id;
+      }
     });
   }
   go(view){
     if(window.echarts) document.querySelectorAll('[data-chart]').forEach(el=>{const c=echarts.getInstanceByDom(el);c&&c.dispose();delete el.dataset.cid});
-    this.setState({view,grafanaPanels:[]},()=>this.loadGrafana());window.scrollTo(0,0);
+    this.setState({view,grafanaPanels:[]},()=>{if(view==='e_kellogg')this.loadKelloggActual()});window.scrollTo(0,0);
   }
   opt(id){
     const s=this.state,v=s.v;
@@ -735,9 +661,16 @@ class Component extends DCLogic {
       sideW:s.collapsed?'72px':'236px',expanded:!s.collapsed,navGroups,
       crumbs:cur.crumbs,pageTitle:cur.title,pageSub:cur.sub,
       isOverview:s.view==='overview',ovGroups,
-      isGrafanaEnergy:isEnergy,
+      isGrafanaEnergy:false,
       grafanaPanels:s.grafanaPanels||[],
-      hasKpis:!isEnergy&&!!kp[s.view],kpis:!isEnergy?(kp[s.view]||[]):[],
+      hasKpis:!!kp[s.view],
+      kpis:(()=>{
+        const cards=(kp[s.view]||[]).map(k=>({...k,value:'Sin datos',unit:'',delta:'',sub:'Sin datos'}));
+        if(s.view==='e_kellogg'&&cards[0]){
+          cards[0]={...cards[0],label:'Demanda actual',value:s.kelloggActual===null?'Sin datos':f(s.kelloggActual,0),unit:'kW',sub:'energia_periodo · planta=queretaro'};
+        }
+        return cards;
+      })(),
       isGeneral,fd:FD[u]||FD.e,genStatus:GEN_STATUS[u]||[],genAlerts:GEN_ALERTS[u]||[],
       hasCards:!isEnergy&&cards.length>0,cards:!isEnergy?cards:[],hasSiteStatus:!isEnergy&&!!SITE_STATUS[s.view],siteStatus:!isEnergy?(SITE_STATUS[s.view]||[]):[],
       isEK:s.view==='e_kellogg',isEP:s.view==='e_pringles',isTrends:s.view==='trends',isSettings:s.view==='settings',

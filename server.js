@@ -98,6 +98,24 @@ async function panelData(id, params) {
   return { panelId: panel.id, title: panel.title, targets };
 }
 
+async function actualKelloggDemand() {
+  const query = [
+    `from(bucket: "${INFLUX_BUCKET}")`,
+    '|> range(start: -10m)',
+    '|> filter(fn: (r) => r["_measurement"] == "energia_periodo")',
+    '|> filter(fn: (r) => r["planta"] == "queretaro")',
+    '|> filter(fn: (r) => r["_field"] == "u_kw")',
+    '|> last()'
+  ].join("\n");
+
+  const rows = await executeQuery(query);
+  if (!rows.length) return null;
+
+  const row = rows[rows.length - 1];
+  const value = Number(row._value);
+  return Number.isFinite(value) ? { value, unit: "kW", time: row._time } : null;
+}
+
 function staticFile(req, res) {
   const pathname = decodeURIComponent(req.url.split("?")[0]);
   const relative = pathname === "/" ? "index.html" : pathname.replace(/^\/+/, "");
@@ -118,6 +136,17 @@ http.createServer(async (req, res) => {
   if (url.pathname === "/api/health") {
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ status: "ok", influxConfigured: Boolean(INFLUX_URL && INFLUX_TOKEN) }));
+    return;
+  }
+  if (url.pathname === "/api/actual") {
+    try {
+      const data = await actualKelloggDemand();
+      res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-store" });
+      res.end(JSON.stringify(data === null ? { value: null } : data));
+    } catch (error) {
+      res.writeHead(500, { "Content-Type": "application/json", "Cache-Control": "no-store" });
+      res.end(JSON.stringify({ error: error.message }));
+    }
     return;
   }
   const match = url.pathname.match(/^\/api\/panels\/([^/]+)$/);
