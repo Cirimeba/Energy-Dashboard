@@ -490,7 +490,7 @@ class Component extends DCLogic {
       rt.wk.push(+(38.4+(Math.random()-0.5)*2.4).toFixed(1));rt.ct.push(+(12.4+(Math.random()-0.5)*1).toFixed(1));rt.gt.push(Math.round(c*266));rt.aux.push(Math.round(212+(Math.random()-0.5)*16));rt.oven.push(Math.round(184+(Math.random()-0.5)*14))}
     const d=this.derive(v),hist={};
     Object.keys(d).forEach(k=>{hist[k]=[...Array(24)].map((_,i)=>+(d[k]*(1+(Math.random()-0.5)*0.05)*(CUM.includes(k)?(0.5+i/46):1)).toFixed(3))});
-    this.state={view:'overview',range:'today',collapsed:false,paused:false,now:new Date(),v,rt,hist};
+    this.state={view:'overview',range:'today',collapsed:false,paused:false,realData:false,now:new Date(),v,rt,hist};
     this.spCol={};
   }
   derive(v){
@@ -518,21 +518,26 @@ class Component extends DCLogic {
       if(!data.configured||data.source!=='influxdb')return;
       this.setState(s=>{
         const v={...s.v};
-        if(Number.isFinite(data.kLoad))v.kLoad=data.kLoad;
-        if(Number.isFinite(data.pf))v.pf=data.pf;
-        if(Number.isFinite(data.freq))v.freq=data.freq;
-        if(Number.isFinite(data.volt))v.volt=data.volt;
-        if(Number.isFinite(data.kE))v.kE=data.kE;
-        if(Number.isFinite(data.pE))v.pE=data.pE;
-        if(Number.isFinite(data.gas))v.gas=data.gas;
-        if(Number.isFinite(data.steam))v.steam=data.steam;
-        return {v};
+        Object.keys(v).forEach(key=>{if(typeof v[key]==='number')v[key]=0});
+        const kelloggs=data.kelloggs||{},pringles=data.pringles||{};
+        v.kE=kelloggs.generationKwh||0;
+        v.pE=kelloggs.cfeKwh||0;
+        v.gas=kelloggs.gasNm3||0;
+        v.steam=kelloggs.steamKgh||0;
+        v.pP=pringles.activePowerKw||0;
+        v.pf=pringles.pf||0;
+        v.freq=pringles.freq||0;
+        v.va=pringles.voltageLnV||pringles.voltageLlV||0;
+        v.vb=v.va;v.vc=v.va;
+        v.total=pringles.activePowerKw||0;
+        return {v,realData:true};
       });
     }catch(error){console.warn('Unable to refresh telemetry from InfluxDB:',error);}
   }
   componentDidUpdate(){this.sync()}
   waitCharts(){if(window.echarts){this.ready=true;this.sync()}else setTimeout(()=>this.waitCharts(),120)}
   tick(){
+    if(this.state.realData) return;
     this.setState(s=>{
       const v={...s.v},dt=2/3600;
       v.kLoad=w(v.kLoad,7.6,9.2,0.18);v.kCogen=w(v.kCogen,5.7,6.5,0.12);v.gas=Math.round(v.kCogen*266+(Math.random()-0.5)*20);

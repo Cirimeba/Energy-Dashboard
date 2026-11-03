@@ -127,14 +127,22 @@ async function telemetry() {
     configured: true,
     source: "influxdb",
     updatedAt: new Date().toISOString(),
-    kLoad: activeWatts ? activeWatts / 1000 : undefined,
-    pf: modbus.factor_potencia_total,
-    freq: modbus.frecuencia_hz,
-    volt: modbus.voltaje_ln_promedio || modbus.voltaje_ll_promedio,
-    kE: genKwh,
-    pE: cfeKwh,
-    gas: collector.SQLDB_GN_nm3,
-    steam: collector.SQLDB_VaporCD_Kgh || collector.SQLDB_VaporCS_Kgh || collector.SQLDB_Vapor_kg
+    kelloggs: {
+      gasNm3: collector.SQLDB_GN_nm3 || 0,
+      generationKwh: genKwh,
+      cfeKwh,
+      steamKgh: collector.SQLDB_VaporCD_Kgh || collector.SQLDB_VaporCS_Kgh || 0,
+      steamKg: collector.SQLDB_Vapor_kg || 0
+    },
+    pringles: {
+      activePowerKw: activeWatts / 1000,
+      pf: modbus.factor_potencia_total || 0,
+      freq: modbus.frecuencia_hz || 0,
+      voltageLnV: modbus.voltaje_ln_promedio || 0,
+      voltageLlV: modbus.voltaje_ll_promedio || 0,
+      activeEnergyKwh: modbus.energia_activa_kwh || 0,
+      currentA: modbus.corriente_promedio || 0
+    }
   };
 }
 
