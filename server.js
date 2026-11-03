@@ -127,7 +127,6 @@ async function actualKelloggDemand() {
     `from(bucket: "${INFLUX_BUCKET}")`,
     '|> range(start: -24h)',
     '|> filter(fn: (r) => r["_measurement"] == "collector_energia")',
-    '|> filter(fn: (r) => r["host"] == "ThinkStation")',
     '|> filter(fn: (r) => r["_field"] == "SQLDB_GN_nm3")',
     '|> last()'
   ].join("\n");
