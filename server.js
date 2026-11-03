@@ -95,6 +95,33 @@ async function telemetry() {
   if (!influxUrl || !organization || !bucket || !token) {
     return { configured: false, source: "mock" };
   }
+
+  async function energyHistory(start = "-24h") {
+    const fluxStart = ["-24h", "-7d", "-30d"].includes(start) ? start : "-24h";
+    const query = `from(bucket: "${bucket}")
+    |> range(start: ${fluxStart})
+    |> filter(fn: (r) => r._measurement == "colector_energia" or r._measurement == "modbus")
+    |> filter(fn: (r) => r._field =~ /^(SQLDB_(Gen_kwhBase|Gen_kwhInter|Gen_kwhPunta|U_kwhBase|U_kwhInter|U_kwhPunta|GN_nm3)|energia_activa_kwh|potencia_activa_total_w)$/)
+    |> sort(columns: ["_time"])`;
+    const response = await fetch(`${influxUrl}/api/v2/query?org=${encodeURIComponent(organization)}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Token ${token}`,
+        "Content-Type": "application/vnd.flux",
+        Accept: "application/csv"
+      },
+      body: query
+    });
+    const text = await response.text();
+    if (!response.ok) throw new Error(`InfluxDB ${response.status}: ${text.slice(0, 300)}`);
+    const series = {};
+    for (const record of parseAnnotatedCsv(text)) {
+      if (!record._time || !record._field || !Number.isFinite(Number(record._value))) continue;
+      if (!series[record._field]) series[record._field] = [];
+      series[record._field].push({ time: record._time, value: Number(record._value) });
+    }
+    return series;
+  }
   const collectorFields = [
     "SQLDB_GN_nm3",
     "SQLDB_Gen_kwhBase",
@@ -180,6 +207,24 @@ const server = http.createServer(async (req, res) => {
       console.error(error);
       res.writeHead(502, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ configured: true, source: "error", error: error.message }));
+    }
+    return;
+  }
+  if (req.url.startsWith("/api/energy-history")) {
+    try {
+      if (!influxUrl || !organization || !bucket || !token) {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ configured: false, series: {} }));
+        return;
+      }
+      const url = new URL(req.url, "http://localhost");
+      const series = await energyHistory(url.searchParams.get("range") || "-24h");
+      res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-store" });
+      res.end(JSON.stringify({ configured: true, series }));
+    } catch (error) {
+      console.error(error);
+      res.writeHead(502, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ configured: true, error: error.message }));
     }
     return;
   }
