@@ -473,7 +473,7 @@ class Component extends DCLogic {
     if(window.innerWidth<1100) this.setState({collapsed:true});
     this.ro=new ResizeObserver(es=>requestAnimationFrame(()=>es.forEach(e=>{const c=window.echarts&&echarts.getInstanceByDom(e.target);c&&c.resize()})));
     this.loadKelloggActual();
-    this.actualTimer=setInterval(()=>this.loadKelloggActual(),15000);
+    this.actualTimer=setInterval(()=>this.loadKelloggActual(),10000);
     this.waitCharts();
     if(this.hdr){this.hro=new ResizeObserver(()=>requestAnimationFrame(()=>{if(!this.hdr)return;const h=Math.round(this.hdr.getBoundingClientRect().height);if(h!==this.state.hH)this.setState({hH:h})}));this.hro.observe(this.hdr)}
   }

@@ -117,6 +117,10 @@ async function actualKelloggDemand() {
     '|> filter(fn: (r) => r["_measurement"] == "energia_periodo")',
     '|> filter(fn: (r) => r["planta"] == "queretaro")',
     '|> filter(fn: (r) => r["_field"] == "gen_kw")',
+    '|> aggregateWindow(every: 5m, fn: mean, createEmpty: false, timeSrc: "_start")',
+    '|> group()',
+    '|> map(fn: (r) => ({ _time: r._time, _value: r._value, serie: "Cogeneración" }))',
+    '|> group(columns: ["serie"])',
     '|> last()'
   ].join("\n");
 
