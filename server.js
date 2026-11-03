@@ -175,22 +175,40 @@ async function actualKelloggDemand() {
 }
 
 async function kelloggElectricalHistory() {
-  const query = [
+  const cfeQuery = [
     `from(bucket: "${INFLUX_BUCKET}")`,
     '|> range(start: -24h)',
     '|> filter(fn: (r) => r["_measurement"] == "energia_periodo")',
     '|> filter(fn: (r) => r["planta"] == "queretaro")',
-    '|> filter(fn: (r) => r["_field"] == "u_kw" or r["_field"] == "gen_kw")',
+    '|> filter(fn: (r) => r["_field"] == "u_kw")',
+    '|> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: "_start")',
+    '|> group()',
+  ].join("\n");
+  const generationQuery = [
+    `from(bucket: "${INFLUX_BUCKET}")`,
+    '|> range(start: -24h)',
+    '|> filter(fn: (r) => r["_measurement"] == "energia_periodo")',
+    '|> filter(fn: (r) => r["planta"] == "queretaro")',
+    '|> filter(fn: (r) => r["_field"] == "gen_kw")',
     '|> aggregateWindow(every: 5m, fn: mean, createEmpty: false, timeSrc: "_start")',
     '|> group()',
   ].join("\n");
-  const rows = await executeQuery(query);
+  const [cfeRows, generationRows] = await Promise.all([
+    executeQuery(cfeQuery),
+    executeQuery(generationQuery)
+  ]);
   const byTime = new Map();
-  for (const row of rows) {
+  for (const row of cfeRows) {
     const time = row._time;
     if (!byTime.has(time)) byTime.set(time, { time, u_kw: null, gen_kw: null });
     const value = Number(row._value);
-    if (Number.isFinite(value)) byTime.get(time)[row._field] = value;
+    if (Number.isFinite(value)) byTime.get(time).u_kw = value;
+  }
+  for (const row of generationRows) {
+    const time = row._time;
+    if (!byTime.has(time)) byTime.set(time, { time, u_kw: null, gen_kw: null });
+    const value = Number(row._value);
+    if (Number.isFinite(value)) byTime.get(time).gen_kw = value;
   }
   return [...byTime.values()]
     .sort((a, b) => new Date(a.time) - new Date(b.time))
