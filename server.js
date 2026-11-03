@@ -174,6 +174,35 @@ async function actualKelloggDemand() {
   };
 }
 
+async function kelloggElectricalHistory() {
+  const query = [
+    `from(bucket: "${INFLUX_BUCKET}")`,
+    '|> range(start: -24h)',
+    '|> filter(fn: (r) => r["_measurement"] == "energia_periodo")',
+    '|> filter(fn: (r) => r["planta"] == "queretaro")',
+    '|> filter(fn: (r) => r["_field"] == "u_kw" or r["_field"] == "gen_kw")',
+    '|> aggregateWindow(every: 5m, fn: mean, createEmpty: false, timeSrc: "_start")',
+    '|> group()',
+  ].join("\n");
+  const rows = await executeQuery(query);
+  const byTime = new Map();
+  for (const row of rows) {
+    const time = row._time;
+    if (!byTime.has(time)) byTime.set(time, { time, u_kw: null, gen_kw: null });
+    const value = Number(row._value);
+    if (Number.isFinite(value)) byTime.get(time)[row._field] = value;
+  }
+  return [...byTime.values()]
+    .sort((a, b) => new Date(a.time) - new Date(b.time))
+    .filter(point => point.u_kw !== null || point.gen_kw !== null)
+    .map(point => ({
+      time: point.time,
+      cfeKw: point.u_kw,
+      generationKw: point.gen_kw,
+      totalKw: point.u_kw !== null && point.gen_kw !== null ? point.u_kw + point.gen_kw : null
+    }));
+}
+
 function staticFile(req, res) {
   const pathname = decodeURIComponent(req.url.split("?")[0]);
   const relative = pathname === "/" ? "index.html" : pathname.replace(/^\/+/, "");
@@ -201,6 +230,17 @@ http.createServer(async (req, res) => {
       const data = await actualKelloggDemand();
       res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-store, no-cache, must-revalidate", "Pragma": "no-cache", "Expires": "0" });
       res.end(JSON.stringify(data === null ? { value: null } : data));
+    } catch (error) {
+      res.writeHead(500, { "Content-Type": "application/json", "Cache-Control": "no-store" });
+      res.end(JSON.stringify({ error: error.message }));
+    }
+    return;
+  }
+  if (url.pathname === "/api/kellogg/electrical-history") {
+    try {
+      const data = await kelloggElectricalHistory();
+      res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-store" });
+      res.end(JSON.stringify({ points: data }));
     } catch (error) {
       res.writeHead(500, { "Content-Type": "application/json", "Cache-Control": "no-store" });
       res.end(JSON.stringify({ error: error.message }));

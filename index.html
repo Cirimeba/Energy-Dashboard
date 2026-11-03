@@ -280,7 +280,7 @@ input{font-family:inherit}
     <sc-if value="{{ isEK }}" hint-placeholder-val="{{ false }}">
       <div style="display:flex;flex-wrap:wrap;gap:16px">
         <div style="flex:2 1 520px;min-width:0;background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px">
-          <div style="display:flex;justify-content:space-between;gap:12px"><div><div style="font-size:14px;font-weight:600;color:#F1F5F9">Real-time Trend</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Plant load, cogeneration output and CFE import</div></div><span style="height:fit-content;font-size:10.5px;font-family:'JetBrains Mono',monospace;color:#64748B;border:1px solid rgba(100,116,139,0.3);border-radius:6px;padding:3px 8px">Sin datos</span></div>
+          <div style="display:flex;justify-content:space-between;gap:12px"><div><div style="font-size:14px;font-weight:600;color:#F1F5F9">Real-time Trend</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Carga planta, cogeneración y suministro CFE · 24 h</div></div><span style="height:fit-content;font-size:10.5px;font-family:'JetBrains Mono',monospace;color:#10B981;border:1px solid rgba(16,185,129,0.3);border-radius:6px;padding:3px 8px">InfluxDB</span></div>
           <div data-chart="k_rt" style="height:290px;margin-top:8px"></div>
         </div>
         <div style="flex:1 1 300px;min-width:0;background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px;display:flex;flex-direction:column">
@@ -461,7 +461,7 @@ class Component extends DCLogic {
       aux:0,oven:0,fry:0,pboil:0,gPress:0,gKTod:0,gPTod:0,gMon:0};
     const rt={t:[],l:[],c:[],g:[],wk:[],ct:[],gt:[],aux:[],oven:[]},hist={};
     const savedView=(location.hash||'').replace(/^#\/?/,'')||localStorage.getItem('ems-view')||'overview';
-    this.state={view:VIEWS[savedView]?savedView:'overview',range:'today',collapsed:false,paused:false,grafanaPanels:[],kelloggActual:null,kelloggActualTime:null,kelloggCogeneration:null,kelloggCogenerationTime:null,kelloggGas:null,kelloggGasTime:null,kelloggSteam:null,kelloggSteamTime:null,now:new Date(),v,rt,hist};
+    this.state={view:VIEWS[savedView]?savedView:'overview',range:'today',collapsed:false,paused:false,grafanaPanels:[],kelloggActual:null,kelloggActualTime:null,kelloggCogeneration:null,kelloggCogenerationTime:null,kelloggGas:null,kelloggGasTime:null,kelloggSteam:null,kelloggSteamTime:null,kelloggElectricalHistory:[],now:new Date(),v,rt,hist};
     this.spCol={};
   }
   derive(v){
@@ -477,13 +477,15 @@ class Component extends DCLogic {
     this.ro=new ResizeObserver(es=>requestAnimationFrame(()=>es.forEach(e=>{const c=window.echarts&&echarts.getInstanceByDom(e.target);c&&c.resize()})));
     this.loadKelloggActual();
     this.actualTimer=setInterval(()=>this.loadKelloggActual(),5000);
+    this.loadKelloggElectricalHistory();
+    this.historyTimer=setInterval(()=>this.loadKelloggElectricalHistory(),300000);
     this.actualVisibility=()=>{if(!document.hidden) this.loadKelloggActual()};
     document.addEventListener('visibilitychange',this.actualVisibility);
     this.waitCharts();
     if(this.hdr){this.hro=new ResizeObserver(()=>requestAnimationFrame(()=>{if(!this.hdr)return;const h=Math.round(this.hdr.getBoundingClientRect().height);if(h!==this.state.hH)this.setState({hH:h})}));this.hro.observe(this.hdr)}
   }
   headerRef=el=>{this.hdr=el};
-  componentWillUnmount(){clearInterval(this.actualTimer);document.removeEventListener('visibilitychange',this.actualVisibility);window.removeEventListener('hashchange',this.viewHash);this.hro&&this.hro.disconnect();this.ro&&this.ro.disconnect()}
+  componentWillUnmount(){clearInterval(this.actualTimer);clearInterval(this.historyTimer);document.removeEventListener('visibilitychange',this.actualVisibility);window.removeEventListener('hashchange',this.viewHash);this.hro&&this.hro.disconnect();this.ro&&this.ro.disconnect()}
   async loadKelloggActual(){
     try{
       const response=await fetch(`/api/actual?t=${Date.now()}`,{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
@@ -501,6 +503,15 @@ class Component extends DCLogic {
       });
     }catch(error){this.setState({kelloggActual:null,kelloggCogeneration:null,kelloggGas:null,kelloggSteam:null})}
   }
+  async loadKelloggElectricalHistory(){
+    try{
+      const response=await fetch(`/api/kellogg/electrical-history?t=${Date.now()}`,{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
+      if(!response.ok) return;
+      const data=await response.json();
+      const points=Array.isArray(data.points)?data.points:[];
+      this.setState({kelloggElectricalHistory:points});
+    }catch(error){this.setState({kelloggElectricalHistory:[]})}
+  }
   componentDidUpdate(){this.sync()}
   waitCharts(){if(window.echarts){this.ready=true;this.sync()}else setTimeout(()=>this.waitCharts(),120)}
   sync(){
@@ -510,6 +521,13 @@ class Component extends DCLogic {
       let c=echarts.getInstanceByDom(el);
       if(!c){c=echarts.init(el,null,{renderer:'canvas'});this.ro.observe(el)}
       const fresh=el.dataset.cid!==id;
+      if(id==='k_rt'){
+        const points=this.state.kelloggElectricalHistory||[];
+        if(points.length){c.setOption(this.opt(id),true)}
+        else c.setOption({animation:false,grid:{left:12,right:12,top:20,bottom:20},xAxis:{show:false},yAxis:{show:false},graphic:{type:'text',left:'center',top:'middle',style:{text:'Sin datos',fill:'#64748B',fontSize:12,fontFamily:'IBM Plex Sans'}}},true);
+        el.dataset.cid=id;
+        return;
+      }
       if(fresh||id.startsWith('sp_')||LIVE.includes(id)){
         c.setOption({animation:false,grid:{left:12,right:12,top:20,bottom:20},xAxis:{show:false},yAxis:{show:false},graphic:{type:'text',left:'center',top:'middle',style:{text:'Sin datos',fill:'#64748B',fontSize:12,fontFamily:'IBM Plex Sans'}}},true);
         el.dataset.cid=id;
@@ -538,7 +556,21 @@ class Component extends DCLogic {
       case 'ov_month':return B({xAxis:xc(M,true),yAxis:yv('MWh'),series:[bar("Kellogg's",mK,C.blue,'a'),topBar('Pringles',mP,hexA(C.blue,0.45),'a'),ln('Cogeneration',mC,C.green,false,false,{showSymbol:true,symbol:'circle'})]});
       case 'ov_demand':{const mx=Math.max(...dQ);return B({xAxis:Object.assign(xc(Q),{axisLabel:{color:C.gray,fontSize:10.5,interval:15}}),yAxis:yv('MW',{min:8,max:15}),series:[ln('Demand',dQ,C.blue,true,false,{markLine:Object.assign(ml(14,'Contracted 14 MW',C.red)),markPoint:{symbol:'circle',symbolSize:9,itemStyle:{color:C.orange,borderColor:'#0B1020',borderWidth:2},label:{show:true,position:'top',color:C.orange,fontSize:10.5,formatter:'Peak '+mx.toFixed(2)},data:[{type:'max'}]}})]})}
       case 'ov_mix':{const kImp=Math.max(0,v.kLoad-v.kCogen),tot=v.kLoad+v.pP;return donut([['Cogeneration',+v.kCogen.toFixed(2),C.green],["CFE → Kellogg's",+kImp.toFixed(2),C.blue],['CFE → Pringles',+v.pP.toFixed(2),C.sky]],(v.kCogen/tot*100).toFixed(1)+'%','cogeneration share','MW')}
-      case 'k_rt':return B({animationDurationUpdate:600,xAxis:rtx(),yAxis:yv('MW',{min:0,max:10}),series:[ln('Plant load',s.rt.l,C.blue),ln('Cogeneration',s.rt.c,C.green,true),ln('CFE import',s.rt.g,C.gray,false,true)]});
+      case 'k_rt':{
+        const points=s.kelloggElectricalHistory||[];
+        const times=points.map(p=>new Date(p.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+        const mw=p=>Number.isFinite(p)?+(p/1000).toFixed(3):null;
+        return B({
+          animationDurationUpdate:600,
+          xAxis:Object.assign(xc(times),{axisLabel:{color:C.gray,fontSize:10.5,interval:'auto'}}),
+          yAxis:yv('MW',{min:0}),
+          series:[
+            ln('Carga total planta',points.map(p=>mw(p.totalKw)),C.blue),
+            ln('Cogeneración',points.map(p=>mw(p.generationKw)),C.green,true),
+            ln('Demanda CFE',points.map(p=>mw(p.cfeKw)),C.gray,false,true)
+          ]
+        });
+      }
       case 'k_daily':return B({xAxis:xc(D30,true),yAxis:yv('MWh',{min:100}),series:[bar('Generation',kGen30,C.green,null,{barMaxWidth:12,markLine:avg()})]});
       case 'k_eff':return gauge(v.eff,0,100,1,'%',C.green,'Total efficiency');
       case 'k_gas':return B({xAxis:xc(H,true),yAxis:[yv('Nm³/h',{min:1200}),yv('MW',{min:4,max:7,splitLine:{show:false}})],series:[bar('Natural gas',gasH,C.orange,null,{barMaxWidth:10}),ln('Electrical output',kC,C.green,false,false,{yAxisIndex:1})]});
