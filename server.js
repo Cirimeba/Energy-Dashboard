@@ -164,7 +164,7 @@ function staticFile(req, res) {
   }
   fs.readFile(filename, (error, data) => {
     if (error) { res.writeHead(404).end("Not found"); return; }
-    res.writeHead(200, { "Content-Type": TYPES[path.extname(filename)] || "application/octet-stream", "Cache-Control": "no-cache" });
+    res.writeHead(200, { "Content-Type": TYPES[path.extname(filename)] || "application/octet-stream", "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0", "Pragma": "no-cache", "Expires": "0" });
     res.end(data);
   });
 }
