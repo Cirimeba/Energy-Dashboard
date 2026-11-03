@@ -123,14 +123,25 @@ async function actualKelloggDemand() {
     '|> group(columns: ["serie"])',
     '|> last()'
   ].join("\n");
+  const gasQuery = [
+    `from(bucket: "${INFLUX_BUCKET}")`,
+    '|> range(start: -24h)',
+    '|> filter(fn: (r) => r["_measurement"] == "collector_energia")',
+    '|> filter(fn: (r) => r["host"] == "ThinkStation")',
+    '|> filter(fn: (r) => r["_field"] == "SQLDB_GN_nm3")',
+    '|> last()'
+  ].join("\n");
 
   const demandRows = await executeQuery(demandQuery);
   const generationRows = await executeQuery(generationQuery);
+  const gasRows = await executeQuery(gasQuery);
   const demand = demandRows[demandRows.length - 1];
   const generation = generationRows[generationRows.length - 1];
+  const gas = gasRows[gasRows.length - 1];
 
   const value = demand ? Number(demand._value) : NaN;
   const cogenerationValue = generation ? Number(generation._value) : NaN;
+  const gasValue = gas ? Number(gas._value) : NaN;
 
   return {
     value: Number.isFinite(value) ? value : null,
@@ -138,7 +149,10 @@ async function actualKelloggDemand() {
     time: demand ? demand._time : null,
     cogenerationValue: Number.isFinite(cogenerationValue) ? cogenerationValue : null,
     cogenerationUnit: "kW",
-    cogenerationTime: generation ? generation._time : null
+    cogenerationTime: generation ? generation._time : null,
+    gasValue: Number.isFinite(gasValue) ? gasValue : null,
+    gasUnit: "Nm³",
+    gasTime: gas ? gas._time : null
   };
 }
 
