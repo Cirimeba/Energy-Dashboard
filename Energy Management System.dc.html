@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/lucide-static@0.454.0/font/lucide.css">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<style>
+html,body{margin:0;background:#0B1020;color:#E2E8F0;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#3B82F6;text-decoration:none}a:hover{color:#93C5FD}
+input{font-family:inherit}
+@keyframes flow{to{stroke-dashoffset:-24}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(16,185,129,.55)}70%{box-shadow:0 0 0 7px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:rgba(148,163,184,.2);border-radius:4px}::-webkit-scrollbar-track{background:transparent}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(1100px 600px at 8% -10%,rgba(59,130,246,0.13),transparent 60%),radial-gradient(900px 500px at 100% 0%,rgba(16,185,129,0.07),transparent 60%),#0B1020;background-attachment:fixed;color:#E2E8F0">
+
+<header ref="{{ headerRef }}" style="position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:16px;flex-wrap:wrap;min-height:64px;padding:10px 20px;background:rgba(11,16,32,0.78);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(148,163,184,0.12)">
+  <div style="display:flex;align-items:center;gap:14px;flex:1 1 auto;min-width:240px">
+    <button onClick="{{ toggleSide }}" title="Toggle sidebar" style="width:36px;height:36px;display:grid;place-items:center;border-radius:10px;border:1px solid rgba(148,163,184,0.15);background:rgba(148,163,184,0.06);color:#94A3B8;cursor:pointer"><i class="icon-panel-left" style="font-size:17px"></i></button>
+    <div style="width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(140deg,#3B82F6,#1D4ED8);box-shadow:0 6px 18px -6px rgba(59,130,246,0.8);color:#fff"><i class="icon-zap" style="font-size:19px"></i></div>
+    <div style="display:flex;flex-direction:column;gap:1px">
+      <div style="font-size:15.5px;font-weight:600;letter-spacing:-0.01em;color:#F1F5F9">Energy Management System</div>
+      <div style="font-size:11px;color:#94A3B8;letter-spacing:0.04em;text-transform:uppercase">Food Manufacturing Complex · CFE Supply</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:2px;padding:3px;border-radius:10px;background:rgba(148,163,184,0.06);border:1px solid rgba(148,163,184,0.12)">
+      <i class="icon-calendar" style="font-size:14px;color:#94A3B8;padding:0 6px 0 8px"></i>
+      <sc-for list="{{ ranges }}" as="r" hint-placeholder-count="3">
+        <button onClick="{{ r.go }}" style="border:0;cursor:pointer;font:inherit;font-size:12px;font-weight:500;padding:6px 11px;border-radius:7px;white-space:nowrap;flex:0 0 auto;background:{{ r.bg }};color:{{ r.color }}">{{ r.label }}</button>
+      </sc-for>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;padding:6px 8px 6px 12px;border-radius:10px;background:rgba(148,163,184,0.06);border:1px solid rgba(148,163,184,0.12)">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ liveColor }};animation:pulse 2s infinite"></span>
+      <div style="display:flex;flex-direction:column;line-height:1.15">
+        <span style="font-size:10.5px;font-weight:600;letter-spacing:0.08em;color:{{ liveColor }}">{{ liveLabel }}</span>
+        <span style="font-size:11px;color:#94A3B8;font-family:'JetBrains Mono',monospace">{{ clock }}</span>
+      </div>
+      <button onClick="{{ togglePause }}" title="Pause / resume updates" style="width:28px;height:28px;display:grid;place-items:center;border-radius:7px;border:0;background:rgba(148,163,184,0.1);color:#CBD5E1;cursor:pointer"><i class="{{ pauseIcon }}" style="font-size:14px"></i></button>
+    </div>
+    <button title="Alerts" style="position:relative;width:38px;height:38px;display:grid;place-items:center;border-radius:10px;border:1px solid rgba(148,163,184,0.15);background:rgba(148,163,184,0.06);color:#CBD5E1;cursor:pointer"><i class="icon-bell" style="font-size:17px"></i><span style="position:absolute;top:5px;right:5px;min-width:16px;height:16px;border-radius:8px;background:#F59E0B;color:#0B1020;font-size:10px;font-weight:700;display:grid;place-items:center">2</span></button>
+    <div style="display:flex;align-items:center;gap:10px;padding:4px 10px 4px 4px;border-radius:12px;border:1px solid rgba(148,163,184,0.12);background:rgba(148,163,184,0.05)">
+      <div style="width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(140deg,#334155,#1E293B);font-size:12px;font-weight:600;color:#E2E8F0;border:1px solid rgba(148,163,184,0.2)">AR</div>
+      <div style="display:flex;flex-direction:column;line-height:1.2">
+        <span style="font-size:12.5px;font-weight:600;color:#E2E8F0">A. Ramírez</span>
+        <span style="font-size:10.5px;color:#94A3B8">Plant Manager</span>
+      </div>
+      <i class="icon-chevron-down" style="font-size:14px;color:#94A3B8"></i>
+    </div>
+  </div>
+</header>
+
+<div style="display:flex;align-items:flex-start">
+  <aside style="position:sticky;top:{{ sideTop }};flex:0 0 auto;width:{{ sideW }};height:{{ sideH }};padding:18px 12px;display:flex;flex-direction:column;gap:4px;border-right:1px solid rgba(148,163,184,0.1);background:rgba(11,16,32,0.45);transition:width .25s ease;overflow:hidden">
+    <sc-if value="{{ expanded }}" hint-placeholder-val="{{ true }}">
+      <div style="font-size:10.5px;letter-spacing:0.1em;color:#64748B;font-weight:600;padding:4px 12px 8px">NAVIGATION</div>
+    </sc-if>
+    <sc-for list="{{ nav }}" as="n" hint-placeholder-count="6">
+      <button onClick="{{ n.go }}" title="{{ n.label }}" style="display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:10px;border:1px solid {{ n.border }};background:{{ n.bg }};color:{{ n.color }};font:inherit;font-size:13px;font-weight:500;cursor:pointer;text-align:left;justify-content:{{ n.justify }};box-shadow:{{ n.shadow }}">
+        <i class="{{ n.icon }}" style="font-size:17px;flex:0 0 auto"></i>
+        <sc-if value="{{ n.expanded }}" hint-placeholder-val="{{ true }}"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ n.label }}</span></sc-if>
+      </button>
+    </sc-for>
+    <div style="flex:1"></div>
+    <sc-if value="{{ expanded }}" hint-placeholder-val="{{ true }}">
+      <div style="padding:12px;border-radius:12px;border:1px solid rgba(148,163,184,0.12);background:rgba(148,163,184,0.04);display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:#CBD5E1;font-weight:600"><i class="icon-database" style="font-size:14px;color:#F59E0B"></i>Data source</div>
+        <div style="font-size:11px;color:#94A3B8;line-height:1.45">InfluxDB connector pending. Showing simulated telemetry.</div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:10.5px;color:#F59E0B;font-family:'JetBrains Mono',monospace"><span style="width:6px;height:6px;border-radius:50%;background:#F59E0B"></span>MOCK MODE</div>
+      </div>
+    </sc-if>
+  </aside>
+
+  <main style="flex:1 1 auto;min-width:0;padding:22px 24px 40px;display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:#64748B;letter-spacing:0.06em;text-transform:uppercase"><span>EMS</span><i class="icon-chevron-right" style="font-size:12px"></i><span style="color:#94A3B8">{{ pageTitle }}</span></div>
+        <h1 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-0.02em;color:#F8FAFC">{{ pageTitle }}</h1>
+        <div style="font-size:13px;color:#94A3B8">{{ pageSub }}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex:0 0 auto;font-size:11px;font-weight:600;color:#10B981;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);border-radius:999px;padding:4px 10px"><span style="width:6px;height:6px;border-radius:50%;background:#10B981"></span>CFE Online</span>
+        <span style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex:0 0 auto;font-size:11px;font-weight:600;color:#10B981;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);border-radius:999px;padding:4px 10px"><span style="width:6px;height:6px;border-radius:50%;background:#10B981"></span>Cogeneration Online</span>
+        <span style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex:0 0 auto;font-size:11px;font-weight:600;color:#F59E0B;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:999px;padding:4px 10px"><span style="width:6px;height:6px;border-radius:50%;background:#F59E0B"></span>2 Warnings</span>
+      </div>
+    </div>
+
+    <sc-if value="{{ hasKpis }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:14px">
+        <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="6">
+          <div style="background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:16px 16px 8px;display:flex;flex-direction:column;gap:4px;min-width:0">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:#94A3B8;font-weight:500;min-width:0"><span style="flex:0 0 auto;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:{{ k.tint }};color:{{ k.color }}"><i class="{{ k.icon }}" style="font-size:15px"></i></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ k.label }}</span></div>
+              <span style="flex:0 0 auto;font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace;color:{{ k.dColor }}">{{ k.delta }}</span>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:6px;margin-top:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:27px;font-weight:600;color:#F8FAFC;letter-spacing:-0.03em">{{ k.value }}</span><span style="font-size:12px;color:#94A3B8">{{ k.unit }}</span></div>
+            <div style="font-size:11px;color:#64748B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ k.sub }}</div>
+            <div data-chart="{{ k.chart }}" style="height:38px;margin:2px -6px 0"></div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-wrap:wrap;gap:16px">
+        <div style="flex:1.7 1 560px;min-width:0;background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px">
+            <div><div style="font-size:14px;font-weight:600;color:#F1F5F9">Real-time Energy Flow</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Both sites are supplied independently by CFE</div></div>
+            <span style="font-size:10.5px;font-family:'JetBrains Mono',monospace;color:#10B981;border:1px solid rgba(16,185,129,0.3);border-radius:6px;padding:3px 8px">DIGITAL TWIN · LIVE</span>
+          </div>
+          <div style="position:relative;height:440px;border-radius:12px;background-color:rgba(2,6,23,0.35);background-image:linear-gradient(rgba(148,163,184,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,0.05) 1px,transparent 1px);background-size:28px 28px;border:1px solid rgba(148,163,184,0.08);overflow:hidden">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%">
+              <path d="M50 12 L50 34 L25 34 L25 58" style="fill:none;stroke:rgba(59,130,246,0.18);stroke-width:8;vector-effect:non-scaling-stroke;stroke-linejoin:round"></path>
+              <path d="M50 12 L50 34 L75 34 L75 58" style="fill:none;stroke:rgba(59,130,246,0.18);stroke-width:8;vector-effect:non-scaling-stroke;stroke-linejoin:round"></path>
+              <path d="M25 88 L25 58" style="fill:none;stroke:rgba(16,185,129,0.18);stroke-width:8;vector-effect:non-scaling-stroke"></path>
+              <path d="M50 12 L50 34 L25 34 L25 58" style="fill:none;stroke:#3B82F6;stroke-width:2.5;stroke-dasharray:6 18;vector-effect:non-scaling-stroke;stroke-linejoin:round;animation:flow 0.9s linear infinite"></path>
+              <path d="M50 12 L50 34 L75 34 L75 58" style="fill:none;stroke:#3B82F6;stroke-width:2.5;stroke-dasharray:6 18;vector-effect:non-scaling-stroke;stroke-linejoin:round;animation:flow 0.9s linear infinite"></path>
+              <path d="M25 88 L25 58" style="fill:none;stroke:#10B981;stroke-width:2.5;stroke-dasharray:6 18;vector-effect:non-scaling-stroke;animation:flow 0.7s linear infinite"></path>
+            </svg>
+            <div style="position:absolute;left:14px;top:14px;display:flex;flex-direction:column;gap:6px;font-size:11px;color:#94A3B8">
+              <div style="display:flex;align-items:center;gap:8px"><span style="width:18px;height:2px;background:#3B82F6"></span>Utility import</div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="width:18px;height:2px;background:#10B981"></span>Cogeneration</div>
+            </div>
+            <div style="position:absolute;left:50%;top:34%;width:12px;height:12px;transform:translate(-50%,-50%);border-radius:50%;background:#0B1020;border:2px solid #3B82F6;box-shadow:0 0 12px #3B82F6"></div>
+            <div style="position:absolute;left:37.5%;top:34%;transform:translate(-50%,-50%);font-family:'JetBrains Mono',monospace;font-size:11px;color:#93C5FD;background:rgba(11,16,32,0.92);border:1px solid rgba(59,130,246,0.35);border-radius:6px;padding:3px 7px;white-space:nowrap">{{ flow.kImp }} MW</div>
+            <div style="position:absolute;left:62.5%;top:34%;transform:translate(-50%,-50%);font-family:'JetBrains Mono',monospace;font-size:11px;color:#93C5FD;background:rgba(11,16,32,0.92);border:1px solid rgba(59,130,246,0.35);border-radius:6px;padding:3px 7px;white-space:nowrap">{{ flow.pImp }} MW</div>
+            <div style="position:absolute;left:25%;top:73%;transform:translate(-50%,-50%);font-family:'JetBrains Mono',monospace;font-size:11px;color:#6EE7B7;background:rgba(11,16,32,0.92);border:1px solid rgba(16,185,129,0.35);border-radius:6px;padding:3px 7px;white-space:nowrap">{{ flow.cogen }} MW</div>
+
+            <div style="position:absolute;left:50%;top:12%;transform:translate(-50%,-50%);width:220px;padding:11px 14px;border-radius:12px;background:rgba(11,16,32,0.94);border:1px solid rgba(59,130,246,0.5);box-shadow:0 0 28px -8px rgba(59,130,246,0.7);display:flex;align-items:center;gap:12px">
+              <div style="width:38px;height:38px;flex:0 0 auto;border-radius:10px;display:grid;place-items:center;background:rgba(59,130,246,0.15);color:#3B82F6"><i class="icon-zap" style="font-size:20px"></i></div>
+              <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+                <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#E2E8F0">CFE Utility Grid<span style="width:6px;height:6px;border-radius:50%;background:#10B981"></span></div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;color:#F8FAFC">{{ flow.grid }} <span style="font-size:11px;color:#94A3B8">MW</span></div>
+                <div style="font-size:10.5px;color:#94A3B8;font-family:'JetBrains Mono',monospace">13.2 kV · {{ flow.freq }} Hz</div>
+              </div>
+            </div>
+
+            <div style="position:absolute;left:25%;top:58%;transform:translate(-50%,-50%);width:200px;padding:11px 14px;border-radius:12px;background:rgba(11,16,32,0.94);border:1px solid rgba(148,163,184,0.25);box-shadow:0 10px 30px -12px rgba(0,0,0,0.8);display:flex;flex-direction:column;gap:4px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:6px"><div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:#E2E8F0"><i class="icon-factory" style="font-size:15px;color:#3B82F6"></i>Kellogg's</div><span style="font-size:9.5px;font-weight:700;color:#10B981;background:rgba(16,185,129,0.14);border-radius:999px;padding:2px 7px">ONLINE</span></div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;color:#F8FAFC">{{ flow.kLoad }} <span style="font-size:11px;color:#94A3B8">MW load</span></div>
+              <div style="height:5px;border-radius:3px;background:rgba(59,130,246,0.5);display:flex;overflow:hidden"><span style="width:{{ flow.selfW }};background:#10B981"></span></div>
+              <div style="font-size:10.5px;color:#94A3B8">{{ flow.selfPct }}% self-generated</div>
+            </div>
+
+            <div style="position:absolute;left:75%;top:58%;transform:translate(-50%,-50%);width:200px;padding:11px 14px;border-radius:12px;background:rgba(11,16,32,0.94);border:1px solid rgba(148,163,184,0.25);box-shadow:0 10px 30px -12px rgba(0,0,0,0.8);display:flex;flex-direction:column;gap:4px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:6px"><div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:#E2E8F0"><i class="icon-building-2" style="font-size:15px;color:#3B82F6"></i>Pringles</div><span style="font-size:9.5px;font-weight:700;color:#10B981;background:rgba(16,185,129,0.14);border-radius:999px;padding:2px 7px">ONLINE</span></div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;color:#F8FAFC">{{ flow.pLoad }} <span style="font-size:11px;color:#94A3B8">MW load</span></div>
+              <div style="font-size:10.5px;color:#94A3B8;font-family:'JetBrains Mono',monospace">PF {{ flow.pf }} · {{ flow.volt }} kV</div>
+              <div style="font-size:10.5px;color:#94A3B8">100% utility supplied</div>
+            </div>
+
+            <div style="position:absolute;left:25%;top:88%;transform:translate(-50%,-50%);width:200px;padding:10px 14px;border-radius:12px;background:rgba(11,16,32,0.94);border:1px solid rgba(16,185,129,0.5);box-shadow:0 0 26px -10px rgba(16,185,129,0.8);display:flex;flex-direction:column;gap:3px">
+              <div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:#E2E8F0"><i class="icon-flame" style="font-size:15px;color:#10B981"></i>Cogeneration GT-1</div>
+              <div style="font-size:10.5px;color:#94A3B8;font-family:'JetBrains Mono',monospace">Gas {{ flow.gas }} Nm³/h</div>
+              <div style="font-size:10.5px;color:#94A3B8;font-family:'JetBrains Mono',monospace">Steam {{ flow.steam }} t/h · η {{ flow.eff }}%</div>
+            </div>
+
+            <div style="position:absolute;left:75%;top:88%;transform:translate(-50%,-50%);width:200px;display:flex;flex-direction:column;gap:6px;padding:10px 14px;border-radius:12px;border:1px dashed rgba(148,163,184,0.22)">
+              <div style="font-size:10.5px;color:#94A3B8;letter-spacing:0.06em;text-transform:uppercase">Complex self-supply</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:#10B981">{{ flow.complexPct }}%</div>
+              <div style="font-size:10.5px;color:#94A3B8">of total demand {{ flow.total }} MW</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:16px">
+          <div style="background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px">
+            <div style="font-size:14px;font-weight:600;color:#F1F5F9;margin-bottom:12px">System Status</div>
+            <div style="display:flex;flex-direction:column">
+              <sc-for list="{{ sysStatus }}" as="a" hint-placeholder-count="5">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid rgba(148,163,184,0.08)">
+                  <div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:12.5px;color:#E2E8F0">{{ a.name }}</span><span style="font-size:11px;color:#64748B;font-family:'JetBrains Mono',monospace">{{ a.meta }}</span></div>
+                  <span style="flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:600;color:{{ a.color }};background:{{ a.bg }};border:1px solid {{ a.border }};border-radius:999px;padding:3px 9px"><span style="width:6px;height:6px;border-radius:50%;background:{{ a.color }}"></span>{{ a.status }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="flex:1;background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div style="font-size:14px;font-weight:600;color:#F1F5F9">Active Alerts</div><span style="font-size:10.5px;font-family:'JetBrains Mono',monospace;color:#94A3B8">LAST 24 H</span></div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ alerts }}" as="al" hint-placeholder-count="3">
+                <div style="display:flex;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(148,163,184,0.05);border:1px solid rgba(148,163,184,0.1)">
+                  <i class="{{ al.icon }}" style="font-size:16px;color:{{ al.color }};margin-top:1px"></i>
+                  <div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:12.5px;color:#E2E8F0">{{ al.title }}</span><span style="font-size:11px;color:#94A3B8">{{ al.text }}</span></div>
+                  <span style="margin-left:auto;font-size:10.5px;color:#64748B;font-family:'JetBrains Mono',monospace;white-space:nowrap">{{ al.time }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:16px">
+        <div style="background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px;min-width:0">
+          <div style="font-size:14px;font-weight:600;color:#F1F5F9">24-Hour Consumption Comparison</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Total complex demand · today vs yesterday</div>
+          <div data-chart="ov_24h" style="height:270px;margin-top:8px"></div>
+        </div>
+        <div style="background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px;min-width:0">
+          <div style="font-size:14px;font-weight:600;color:#F1F5F9">Kellogg's vs Pringles Consumption</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Daily energy · last 7 days (MWh)</div>
+          <div data-chart="ov_vs" style="height:270px;margin-top:8px"></div>
+        </div>
+        <div style="background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px;min-width:0">
+          <div style="font-size:14px;font-weight:600;color:#F1F5F9">Monthly Energy Trend</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Consumption by site and cogeneration output · 12 months (MWh)</div>
+          <div data-chart="ov_month" style="height:270px;margin-top:8px"></div>
+        </div>
+        <div style="background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px;min-width:0">
+          <div style="font-size:14px;font-weight:600;color:#F1F5F9">Demand Curve</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">15-minute demand vs contracted capacity (MW)</div>
+          <div data-chart="ov_demand" style="height:270px;margin-top:8px"></div>
+        </div>
+        
+        <div style="background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px;min-width:0">
+          <div style="font-size:14px;font-weight:600;color:#F1F5F9">Utility vs Cogeneration Contribution</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Live supply mix across both sites</div>
+          <div data-chart="ov_mix" style="height:270px;margin-top:8px"></div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isKellogg }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-wrap:wrap;gap:16px">
+        <div style="flex:2 1 520px;min-width:0;background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px">
+          <div style="display:flex;justify-content:space-between;gap:12px"><div><div style="font-size:14px;font-weight:600;color:#F1F5F9">Real-time Trend</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Plant load, cogeneration output and CFE import · 2 s sampling</div></div><span style="height:fit-content;font-size:10.5px;font-family:'JetBrains Mono',monospace;color:#10B981;border:1px solid rgba(16,185,129,0.3);border-radius:6px;padding:3px 8px">LIVE</span></div>
+          <div data-chart="k_rt" style="height:290px;margin-top:8px"></div>
+        </div>
+        <div style="flex:1 1 300px;min-width:0;background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px;display:flex;flex-direction:column">
+          <div style="font-size:14px;font-weight:600;color:#F1F5F9">Cogeneration Efficiency</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Total CHP efficiency (electrical + thermal)</div>
+          <div data-chart="k_eff" style="height:220px;margin-top:4px"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="padding:10px 12px;border-radius:10px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2)"><div style="font-size:11px;color:#94A3B8">Electrical</div><div style="font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;color:#93C5FD">{{ effE }}%</div></div>
+            <div style="padding:10px 12px;border-radius:10px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2)"><div style="font-size:11px;color:#94A3B8">Thermal</div><div style="font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;color:#FCD34D">{{ effT }}%</div></div>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:16px">
+        <div style="background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px;min-width:0">
+          <div style="font-size:14px;font-weight:600;color:#F1F5F9">Daily Generation</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Cogeneration electrical output · last 30 days (MWh)</div>
+          <div data-chart="k_daily" style="height:270px;margin-top:8px"></div>
+        </div>
+        <div style="background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px;min-width:0">
+          <div style="font-size:14px;font-weight:600;color:#F1F5F9">Gas vs Electricity Production</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Natural gas input (Nm³/h) vs electrical output (MW) · 24 h</div>
+          <div data-chart="k_gas" style="height:270px;margin-top:8px"></div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:16px">
+        <div style="flex:2 1 520px;min-width:0;background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px">
+          <div style="font-size:14px;font-weight:600;color:#F1F5F9">Steam Production</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">HRSG steam output · capacity 18 t/h</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+            <div data-chart="k_steamG" style="flex:1 1 200px;height:250px;min-width:0"></div>
+            <div data-chart="k_steam24" style="flex:2.2 1 320px;height:250px;min-width:0"></div>
+          </div>
+        </div>
+        <div style="flex:1 1 300px;min-width:0;background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px">
+          <div style="font-size:14px;font-weight:600;color:#F1F5F9;margin-bottom:8px">Equipment Status</div>
+          <sc-for list="{{ kAssets }}" as="a" hint-placeholder-count="5">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid rgba(148,163,184,0.08)">
+              <div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:12.5px;color:#E2E8F0">{{ a.name }}</span><span style="font-size:11px;color:#64748B;font-family:'JetBrains Mono',monospace">{{ a.meta }}</span></div>
+              <span style="flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:600;color:{{ a.color }};background:{{ a.bg }};border:1px solid {{ a.border }};border-radius:999px;padding:3px 9px"><span style="width:6px;height:6px;border-radius:50%;background:{{ a.color }}"></span>{{ a.status }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isPringles }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-wrap:wrap;gap:16px">
+        <div style="flex:2 1 520px;min-width:0;background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px">
+          <div style="font-size:14px;font-weight:600;color:#F1F5F9">Load Profile</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">15-minute active power with CFE tariff periods (base · intermediate · peak)</div>
+          <div data-chart="p_load" style="height:300px;margin-top:8px"></div>
+        </div>
+        <div style="flex:1 1 320px;min-width:0;background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px">
+          <div style="font-size:14px;font-weight:600;color:#F1F5F9">Power Quality</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Main substation 13.2 kV meter</div>
+          <div data-chart="p_pf" style="height:170px;margin-top:4px"></div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ pq }}" as="q" hint-placeholder-count="6">
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:#94A3B8">{{ q.label }}</span><span style="font-family:'JetBrains Mono',monospace;color:#E2E8F0">{{ q.value }}</span></div>
+                <div style="height:4px;border-radius:2px;background:rgba(148,163,184,0.12);overflow:hidden"><div style="height:100%;width:{{ q.w }};background:{{ q.color }};border-radius:2px;transition:width .6s ease"></div></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:16px">
+        <div style="flex:1.6 1 480px;min-width:0;background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px">
+          <div style="font-size:14px;font-weight:600;color:#F1F5F9">Consumption Trend</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Daily energy · last 30 days (MWh)</div>
+          <div data-chart="p_trend" style="height:270px;margin-top:8px"></div>
+        </div>
+        <div style="flex:1 1 300px;min-width:0;background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px">
+          <div style="font-size:14px;font-weight:600;color:#F1F5F9;margin-bottom:8px">Equipment Status</div>
+          <sc-for list="{{ pAssets }}" as="a" hint-placeholder-count="5">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid rgba(148,163,184,0.08)">
+              <div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:12.5px;color:#E2E8F0">{{ a.name }}</span><span style="font-size:11px;color:#64748B;font-family:'JetBrains Mono',monospace">{{ a.meta }}</span></div>
+              <span style="flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:600;color:{{ a.color }};background:{{ a.bg }};border:1px solid {{ a.border }};border-radius:999px;padding:3px 9px"><span style="width:6px;height:6px;border-radius:50%;background:{{ a.color }}"></span>{{ a.status }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px">
+        <div style="font-size:14px;font-weight:600;color:#F1F5F9">Daily and Monthly Comparisons</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Projected totals vs reference periods (MWh)</div>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;margin-top:8px">
+          <div data-chart="p_cmpD" style="flex:1 1 320px;height:220px;min-width:0"></div>
+          <div data-chart="p_cmpM" style="flex:1 1 320px;height:220px;min-width:0"></div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isTrends }}" hint-placeholder-val="{{ false }}">
+      <div style="background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px">
+        <div style="font-size:14px;font-weight:600;color:#F1F5F9">Weekly Load Heatmap</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Average complex demand by weekday and hour (MW)</div>
+        <div data-chart="t_heat" style="height:300px;margin-top:8px"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:16px">
+        <div style="background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px;min-width:0">
+          <div style="font-size:14px;font-weight:600;color:#F1F5F9">Year-over-Year Consumption</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Total complex energy · 2025 vs 2026 (MWh)</div>
+          <div data-chart="t_yoy" style="height:270px;margin-top:8px"></div>
+        </div>
+        <div style="background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px;min-width:0">
+          <div style="font-size:14px;font-weight:600;color:#F1F5F9">Specific Energy Consumption</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">kWh per ton of finished product</div>
+          <div data-chart="t_sec" style="height:270px;margin-top:8px"></div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px">
+        <div style="background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:20px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:#F1F5F9"><i class="icon-database" style="font-size:17px;color:#3B82F6"></i>InfluxDB Connection</div><span style="font-size:10.5px;font-weight:600;color:#F59E0B;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:999px;padding:3px 9px">NOT CONNECTED</span></div>
+          <sc-for list="{{ dbFields }}" as="fd" hint-placeholder-count="5">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:#94A3B8">{{ fd.label }}<input placeholder="{{ fd.ph }}" style="height:38px;padding:0 12px;border-radius:9px;border:1px solid rgba(148,163,184,0.18);background:rgba(2,6,23,0.5);color:#E2E8F0;font-size:13px;font-family:'JetBrains Mono',monospace;outline:none"></input></label>
+          </sc-for>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button style="height:38px;padding:0 16px;border-radius:9px;border:0;background:#3B82F6;color:#fff;font:inherit;font-size:13px;font-weight:600;cursor:pointer">Test connection</button>
+            <button style="height:38px;padding:0 16px;border-radius:9px;border:1px solid rgba(148,163,184,0.2);background:transparent;color:#CBD5E1;font:inherit;font-size:13px;cursor:pointer">Keep mock data</button>
+          </div>
+        </div>
+        <div style="background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:20px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:#F1F5F9"><i class="icon-bell-ring" style="font-size:17px;color:#F59E0B"></i>Alarm Thresholds</div>
+          <sc-for list="{{ thresholds }}" as="th" hint-placeholder-count="5">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid rgba(148,163,184,0.08)">
+              <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12.5px;color:#E2E8F0">{{ th.label }}</span><span style="font-size:11px;color:#64748B">{{ th.sub }}</span></div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#E2E8F0;padding:6px 10px;border-radius:8px;border:1px solid rgba(148,163,184,0.18);background:rgba(2,6,23,0.5);white-space:nowrap">{{ th.value }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:11px;color:#475569;font-family:'JetBrains Mono',monospace;padding-top:4px"><span>EMS v1.0 · simulated telemetry</span><span>Refresh interval 2 s</span></div>
+  </main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const C={blue:'#3B82F6',green:'#10B981',orange:'#F59E0B',red:'#EF4444',gray:'#94A3B8',sky:'#60A5FA',text:'#E2E8F0',grid:'rgba(148,163,184,0.09)'};
+const hexA=(h,a)=>{const n=parseInt(h.slice(1),16);return `rgba(${n>>16},${(n>>8)&255},${n&255},${a})`};
+let _s=11;const R=()=>{_s=(_s*16807)%2147483647;return(_s-1)/2147483646};
+const pad=n=>String(n).padStart(2,'0');
+const H=[...Array(24)].map((_,i)=>pad(i)+':00');
+const Q=[...Array(96)].map((_,i)=>pad(Math.floor(i/4))+':'+pad(i%4*15));
+const sh=h=>(h>=6&&h<22)?1:0;
+const kL=H.map((_,h)=>+(7.3+0.8*sh(h)+0.35*Math.sin(h/24*Math.PI*2-1.2)+R()*0.3).toFixed(2));
+const kC=H.map(()=>+(5.95+R()*0.4).toFixed(2));
+const pL=H.map((_,h)=>+(2.5+1.1*sh(h)+0.25*Math.sin(h/2.5)+R()*0.2).toFixed(2));
+const tT=H.map((_,h)=>+(kL[h]+pL[h]).toFixed(2));
+const yT=H.map((_,h)=>+(tT[h]+(R()-0.55)*0.7).toFixed(2));
+const gasH=H.map((_,h)=>Math.round(kC[h]*266+R()*40));
+const steamH=H.map((_,h)=>+(11.6+1.6*sh(h)+R()*0.8).toFixed(1));
+const pQ=Q.map((_,i)=>{const h=i/4;return +(2.45+1.15*sh(Math.floor(h))+0.3*Math.sin(h/2)+R()*0.28).toFixed(2)});
+const dQ=Q.map((_,i)=>+(kL[Math.floor(i/4)]+pQ[i]+(R()-0.5)*0.4).toFixed(2));
+const D30=[...Array(30)].map((_,i)=>{const d=new Date(2026,8,29+i);return (d.getMonth()+1)+'/'+d.getDate()});
+const kGen30=D30.map((_,i)=>+(138+R()*14-(i%7===4?9:0)).toFixed(1));
+const pDay30=D30.map((_,i)=>+(84+R()*7-(i%7===4?13:0)).toFixed(1));
+const kDay30=D30.map((_,i)=>+(192+R()*12-(i%7===4?15:0)).toFixed(1));
+const M=['Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'];
+const mK=M.map((_,i)=>Math.round(5750+R()*500+(i>=5&&i<=8?250:0)));
+const mP=M.map(()=>Math.round(2420+R()*260));
+const mC=M.map(()=>Math.round(4250+R()*300));
+const mGridE=M.map((_,i)=>Math.round((mK[i]-mC[i]+mP[i])*0.112));
+const mDem=M.map(()=>Math.round(35+R()*5));
+const mGas=M.map((_,i)=>Math.round(mC[i]*265*0.28/1000));
+const mSav=M.map((_,i)=>Math.round(mC[i]*0.0388));
+const MY=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const y25=MY.map((_,i)=>Math.round(8450+R()*500+(i>=4&&i<=7?300:0)));
+const y26=MY.slice(0,10).map((_,i)=>Math.round(y25[i]*(0.94+R()*0.04)));
+const secK=M.map(()=>Math.round(605+R()*30)),secP=M.map(()=>Math.round(870+R()*35));
+const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const heat=[];DAYS.forEach((_,d)=>H.forEach((_,h)=>heat.push([h,d,+((tT[h])*(d===6?0.8:d===5?0.9:1)+(R()-0.5)*0.5).toFixed(2)])));
+const D7=D30.slice(-7);
+const tar=D7.map((_,i)=>{const t=(kDay30[23+i]-kGen30[23+i])+pDay30[23+i];return [+(t*0.30).toFixed(1),+(t*0.52).toFixed(1),+(t*0.18).toFixed(1)]});
+const SPS={secK,secP,lf:[80,81,83,82,81,84,83,82,82,83,82,82.4],peak:[13.1,13.4,13.2,13.6,13.5,13.8,13.9,13.7,13.4,13.5,13.6,13.62],yoy:y26.map((v,i)=>+((v/y25[i]-1)*100).toFixed(1)),self:mC.map((c,i)=>+(c/(mK[i]+mP[i])*100).toFixed(1))};
+const TT={trigger:'axis',backgroundColor:'rgba(15,23,42,0.96)',borderColor:'rgba(148,163,184,0.22)',borderWidth:1,padding:[8,12],textStyle:{color:C.text,fontSize:12,fontFamily:'IBM Plex Sans'},axisPointer:{type:'line',lineStyle:{color:'rgba(148,163,184,0.35)'}}};
+const LG={top:0,right:0,itemWidth:10,itemHeight:6,icon:'roundRect',itemGap:14,textStyle:{color:C.gray,fontSize:11}};
+const xc=(data,gap)=>({type:'category',data,boundaryGap:!!gap,axisLine:{lineStyle:{color:'rgba(148,163,184,0.18)'}},axisTick:{show:false},axisLabel:{color:C.gray,fontSize:10.5}});
+const yv=(name,o)=>Object.assign({type:'value',name,nameTextStyle:{color:'#64748B',fontSize:10,align:'left'},splitLine:{lineStyle:{color:C.grid}},axisLabel:{color:C.gray,fontSize:10.5}},o||{});
+const grad=(c,a)=>new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:hexA(c,a==null?0.32:a)},{offset:1,color:hexA(c,0)}]);
+const vgrad=(c)=>new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:c},{offset:1,color:hexA(c,0.35)}]);
+const ln=(name,data,color,area,dash,extra)=>Object.assign({name,type:'line',data,smooth:true,showSymbol:false,symbolSize:6,lineStyle:{width:2,color,type:dash?'dashed':'solid'},itemStyle:{color},areaStyle:area?{color:grad(color)}:undefined},extra||{});
+const bar=(name,data,color,stack,extra)=>Object.assign({name,type:'bar',data,stack,barMaxWidth:16,itemStyle:{color:stack?color:vgrad(color),borderRadius:stack?0:[4,4,0,0]}},extra||{});
+const gauge=(val,min,max,dec,unit,color,name)=>({series:[{type:'gauge',min,max,startAngle:215,endAngle:-35,radius:'95%',center:['50%','58%'],progress:{show:true,width:12,roundCap:true,itemStyle:{color,shadowColor:color,shadowBlur:12}},axisLine:{roundCap:true,lineStyle:{width:12,color:[[1,'rgba(148,163,184,0.12)']]}},axisTick:{distance:-26,length:4,lineStyle:{color:'rgba(148,163,184,0.35)',width:1}},splitLine:{distance:-28,length:8,lineStyle:{color:'rgba(148,163,184,0.45)',width:1.5}},splitNumber:5,axisLabel:{show:false},pointer:{show:false},anchor:{show:false},title:{offsetCenter:[0,'32%'],color:C.gray,fontSize:11},detail:{valueAnimation:true,offsetCenter:[0,'0%'],fontSize:26,fontWeight:600,fontFamily:'JetBrains Mono',color:'#F8FAFC',formatter:v=>v.toFixed(dec)+unit},data:[{value:val,name}]}]});
+const LIVE=['k_rt','k_eff','k_steamG','ov_mix','p_pf'];
+const RANGES=[{id:'today',label:'Today',m:1,sub:'today'},{id:'7d',label:'7 Days',m:10.2,sub:'last 7 days'},{id:'30d',label:'30 Days',m:43.6,sub:'last 30 days'}];
+const VIEWS=[{id:'overview',label:'Overview',icon:'icon-layout-dashboard',sub:'Complex-wide energy supply and demand in real time'},{id:'kellogg',label:"Kellogg's Cogeneration",icon:'icon-factory',sub:'Gas turbine cogeneration with heat recovery steam generation'},{id:'pringles',label:'Pringles',icon:'icon-building-2',sub:'Utility-supplied site · 13.2 kV main substation'},{id:'trends',label:'Trends & Analytics',icon:'icon-chart-line',sub:'Load patterns, year-over-year comparison and energy intensity'},{id:'settings',label:'Settings',icon:'icon-settings',sub:'Data source and alarm configuration'}];
+const ST={Online:[C.green],Warning:[C.orange],Offline:[C.red]};
+const badge=(name,status,meta)=>{const c=ST[status][0];return {name,status,meta,color:c,bg:hexA(c,0.12),border:hexA(c,0.3)}};
+const w=(v,a,b,st)=>Math.min(b,Math.max(a,v+(Math.random()-0.5)*st));
+const f=(n,d)=>Number(n).toLocaleString('en-US',{minimumFractionDigits:d||0,maximumFractionDigits:d||0});
+const tstr=d=>pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+
+class Component extends DCLogic {
+  constructor(p){
+    super(p);
+    const v={kLoad:8.42,kCogen:6.18,gas:1652,steam:12.8,kE:98420,sav:4820,pP:3.62,pE:52310,pM:2140.6,pMax:4.21,pf:0.962,va:13.24,vb:13.19,vc:13.21,freq:60.0,eff:78.4,thdV:2.1,thdI:4.8,unb:0.8};
+    const now=Date.now(),rt={t:[],l:[],c:[],g:[]};
+    for(let i=59;i>=0;i--){const l=+(8.42+(Math.random()-0.5)*0.4).toFixed(2),c=+(6.18+(Math.random()-0.5)*0.25).toFixed(2);rt.t.push(tstr(new Date(now-i*2000)));rt.l.push(l);rt.c.push(c);rt.g.push(+(l-c).toFixed(2))}
+    const hist={};
+    const d=this.derive(v);
+    Object.keys(d).forEach(k=>{hist[k]=[...Array(24)].map((_,i)=>+(d[k]*(1+(Math.random()-0.5)*0.05)*(k==='kE'||k==='sav'||k==='pE'||k==='co2'||k==='pM'?(0.5+i/46):1)).toFixed(3))});
+    this.state={view:'overview',range:'today',collapsed:false,paused:false,now:new Date(),v,rt,hist};
+  }
+  derive(v){const total=v.kLoad+v.pP;return {total,kCogen:v.kCogen,grid:total-v.kCogen,gas:v.gas,sav:v.sav,co2:v.kE/1000*0.238,kLoad:v.kLoad,steam:v.steam,kE:v.kE,pP:v.pP,pE:v.pE,pM:v.pM,pMax:v.pMax,pf:v.pf,volt:(v.va+v.vb+v.vc)/3}}
+  componentDidMount(){
+    if(window.innerWidth<1100) this.setState({collapsed:true});
+    this.ro=new ResizeObserver(es=>requestAnimationFrame(()=>es.forEach(e=>{const c=window.echarts&&echarts.getInstanceByDom(e.target);c&&c.resize()})));
+    this.timer=setInterval(()=>this.state.paused?null:this.tick(),2000);
+    this.waitCharts();
+    if(this.hdr){this.hro=new ResizeObserver(()=>requestAnimationFrame(()=>{if(!this.hdr)return;const h=Math.round(this.hdr.getBoundingClientRect().height);if(h!==this.state.hH)this.setState({hH:h})}));this.hro.observe(this.hdr)}
+  }
+  headerRef=el=>{this.hdr=el};
+  componentWillUnmount(){clearInterval(this.timer);this.hro&&this.hro.disconnect();this.ro&&this.ro.disconnect()}
+  componentDidUpdate(){this.sync()}
+  waitCharts(){if(window.echarts){this.ready=true;this.sync()}else setTimeout(()=>this.waitCharts(),120)}
+  tick(){
+    this.setState(s=>{
+      const v={...s.v};
+      v.kLoad=w(v.kLoad,7.6,9.2,0.18);v.kCogen=w(v.kCogen,5.7,6.5,0.12);v.gas=Math.round(v.kCogen*266+(Math.random()-0.5)*20);
+      v.steam=w(v.steam,11.5,14.5,0.2);v.kE+=v.kCogen*1000*2/3600;v.sav+=v.kCogen*2/3600*38.6;
+      v.pP=w(v.pP,3.1,4.15,0.12);v.pE+=v.pP*1000*2/3600;v.pM+=v.pP*2/3600;v.pMax=Math.max(v.pMax,v.pP);
+      v.pf=w(v.pf,0.94,0.985,0.004);v.va=w(v.va,13.1,13.35,0.02);v.vb=w(v.vb,13.1,13.35,0.02);v.vc=w(v.vc,13.1,13.35,0.02);
+      v.freq=w(v.freq,59.96,60.04,0.01);v.eff=w(v.eff,75,81,0.4);v.thdV=w(v.thdV,1.6,2.8,0.1);v.thdI=w(v.thdI,3.8,6.2,0.2);v.unb=w(v.unb,0.4,1.3,0.06);
+      const now=new Date(),rt={t:[...s.rt.t.slice(1),tstr(now)],l:[...s.rt.l.slice(1),+v.kLoad.toFixed(2)],c:[...s.rt.c.slice(1),+v.kCogen.toFixed(2)],g:[...s.rt.g.slice(1),+(v.kLoad-v.kCogen).toFixed(2)]};
+      const d=this.derive(v),hist={};Object.keys(d).forEach(k=>{hist[k]=[...s.hist[k].slice(1),+d[k].toFixed(3)]});
+      return {v,rt,hist,now};
+    });
+  }
+  sync(){
+    if(!this.ready) return;
+    document.querySelectorAll('[data-chart]').forEach(el=>{
+      const id=el.getAttribute('data-chart');if(!id||!el.clientWidth) return;
+      let c=echarts.getInstanceByDom(el);
+      if(!c){c=echarts.init(el,null,{renderer:'canvas'});this.ro.observe(el)}
+      const fresh=el.dataset.cid!==id;
+      if(fresh||id.startsWith('sp_')||LIVE.includes(id)){const o=this.opt(id);if(o){c.setOption(o,fresh);el.dataset.cid=id}}
+    });
+  }
+  go(view){
+    if(window.echarts) document.querySelectorAll('[data-chart]').forEach(el=>{const c=echarts.getInstanceByDom(el);c&&c.dispose();delete el.dataset.cid});
+    this.setState({view});
+    const m=document.querySelector('main');window.scrollTo(0,0);
+  }
+  opt(id){
+    const s=this.state,v=s.v;
+    const B=o=>Object.assign({animationDuration:900,animationEasing:'cubicOut',textStyle:{fontFamily:'IBM Plex Sans'},grid:{left:4,right:12,top:40,bottom:4,containLabel:true},tooltip:TT,legend:LG},o);
+    if(id.startsWith('sp_')){
+      const k=id.slice(3),data=s.hist[k]||SPS[k]||[],col=this.spColor[k]||C.blue;
+      return {animation:false,grid:{left:6,right:6,top:4,bottom:2},xAxis:{type:'category',show:false,boundaryGap:false,data:data.map((_,i)=>i)},yAxis:{type:'value',show:false,scale:true},series:[{type:'line',data,smooth:true,showSymbol:false,lineStyle:{width:1.6,color:col},areaStyle:{color:grad(col,0.28)}}]};
+    }
+    switch(id){
+      case 'ov_24h':return B({xAxis:xc(H),yAxis:yv('MW',{min:8}),series:[ln('Today',tT,C.blue,true),ln('Yesterday',yT,C.gray,false,true,{lineStyle:{width:1.5,color:C.gray,type:'dashed'}})]});
+      case 'ov_vs':return B({xAxis:xc(D7,true),yAxis:yv('MWh'),series:[bar("Kellogg's",kDay30.slice(-7),C.blue,null,{barGap:'30%'}),bar('Pringles',pDay30.slice(-7),C.green)]});
+      case 'ov_month':return B({xAxis:xc(M,true),yAxis:yv('MWh'),series:[bar("Kellogg's",mK,C.blue,'a'),bar('Pringles',mP,hexA(C.blue,0.45),'a',{itemStyle:{color:hexA(C.blue,0.45),borderRadius:[4,4,0,0]}}),ln('Cogeneration',mC,C.green,false,false,{showSymbol:true,symbol:'circle'})]});
+      case 'ov_demand':{const mx=Math.max(...dQ);return B({xAxis:Object.assign(xc(Q),{axisLabel:{color:C.gray,fontSize:10.5,interval:15}}),yAxis:yv('MW',{min:8,max:15}),series:[ln('Demand',dQ,C.blue,true,false,{markLine:{symbol:'none',silent:true,lineStyle:{color:C.red,type:'dashed',width:1.2},label:{color:C.red,fontSize:10.5,formatter:'Contracted 14 MW',position:'insideEndTop'},data:[{yAxis:14}]},markPoint:{symbol:'circle',symbolSize:9,itemStyle:{color:C.orange,borderColor:'#0B1020',borderWidth:2},label:{show:true,position:'top',color:C.orange,fontSize:10.5,formatter:'Peak '+mx.toFixed(2)},data:[{type:'max'}]}})]})}
+      case 'ov_mix':{const kImp=Math.max(0,v.kLoad-v.kCogen),tot=v.kLoad+v.pP,pct=v.kCogen/tot*100;
+        return {tooltip:{trigger:'item',backgroundColor:'rgba(15,23,42,0.96)',borderColor:'rgba(148,163,184,0.22)',textStyle:{color:C.text,fontSize:12},formatter:p=>`${p.name}<br/><b>${p.value.toFixed(2)} MW</b> · ${p.percent.toFixed(1)}%`},legend:Object.assign({},LG,{top:'middle',right:8,orient:'vertical',itemGap:14,formatter:n=>n}),
+          title:{text:pct.toFixed(1)+'%',subtext:'cogeneration share',left:'34%',top:'40%',textAlign:'center',textStyle:{color:'#F8FAFC',fontFamily:'JetBrains Mono',fontSize:24,fontWeight:600},subtextStyle:{color:C.gray,fontSize:11}},
+          series:[{type:'pie',radius:['58%','80%'],center:['35%','52%'],padAngle:2,itemStyle:{borderRadius:6},label:{show:false},data:[{name:'Cogeneration',value:+v.kCogen.toFixed(2),itemStyle:{color:C.green}},{name:"CFE → Kellogg's",value:+kImp.toFixed(2),itemStyle:{color:C.blue}},{name:'CFE → Pringles',value:+v.pP.toFixed(2),itemStyle:{color:C.sky}}]}]}}
+      case 'k_rt':return B({animationDurationUpdate:600,xAxis:Object.assign(xc(s.rt.t),{axisLabel:{color:C.gray,fontSize:10.5,interval:14}}),yAxis:yv('MW',{min:0,max:10}),series:[ln('Plant load',s.rt.l,C.blue,false),ln('Cogeneration',s.rt.c,C.green,true),ln('CFE import',s.rt.g,C.gray,false,true,{lineStyle:{width:1.5,color:C.gray,type:'dashed'}})]});
+      case 'k_daily':return B({xAxis:xc(D30,true),yAxis:yv('MWh',{min:100}),series:[bar('Generation',kGen30,C.green,null,{barMaxWidth:12,markLine:{symbol:'none',silent:true,lineStyle:{color:C.gray,type:'dashed'},label:{color:C.gray,fontSize:10.5,formatter:p=>'Avg '+p.value.toFixed(1),position:'insideEndTop'},data:[{type:'average'}]}})]});
+      case 'k_eff':return gauge(v.eff,0,100,1,'%',C.green,'Total efficiency');
+      case 'k_gas':return B({xAxis:xc(H,true),yAxis:[yv('Nm³/h',{min:1200}),yv('MW',{min:4,max:7,splitLine:{show:false}})],series:[bar('Natural gas',gasH,C.orange,null,{barMaxWidth:10}),ln('Electrical output',kC,C.green,false,false,{yAxisIndex:1})]});
+      case 'k_steam24':return B({xAxis:xc(H),yAxis:yv('t/h',{min:8,max:18}),series:[ln('Steam',steamH,C.sky,true,false,{markLine:{symbol:'none',silent:true,lineStyle:{color:C.orange,type:'dashed'},label:{color:C.orange,fontSize:10.5,formatter:'Process demand 13 t/h',position:'insideEndTop'},data:[{yAxis:13}]}})]});
+      case 'k_steamG':return gauge(v.steam,0,18,1,'',C.sky,'t/h steam');
+      case 'p_load':{const ma=(a,b,c)=>[{name:'',xAxis:a,itemStyle:{color:c}},{xAxis:b}];return B({xAxis:Object.assign(xc(Q),{axisLabel:{color:C.gray,fontSize:10.5,interval:15}}),yAxis:yv('MW',{min:0}),series:[ln('Active power',pQ,C.blue,true,false,{markArea:{silent:true,label:{color:'#64748B',fontSize:10,position:'insideTop'},data:[[{name:'Base',xAxis:'00:00',itemStyle:{color:'rgba(148,163,184,0.05)'}},{xAxis:'06:00'}],[{name:'Intermediate',xAxis:'06:00',itemStyle:{color:'rgba(245,158,11,0.05)'}},{xAxis:'18:00'}],[{name:'Peak',xAxis:'18:00',itemStyle:{color:'rgba(239,68,68,0.09)'}},{xAxis:'22:00'}],[{name:'Int.',xAxis:'22:00',itemStyle:{color:'rgba(245,158,11,0.05)'}},{xAxis:'23:45'}]]}})]})}
+      case 'p_trend':return B({xAxis:xc(D30,true),yAxis:yv('MWh',{min:60}),series:[bar('Daily energy',pDay30.map((x,i)=>i===29?{value:x,itemStyle:{color:C.green,borderRadius:[4,4,0,0]}}:x),C.blue,null,{barMaxWidth:12})]});
+      case 'p_pf':{const col=v.pf>=0.95?C.green:C.orange;return gauge(v.pf,0.8,1,3,'',col,'Power factor')}
+      case 'p_cmpD':case 'p_cmpM':{const D=id==='p_cmpD';const cats=D?['Same day last week','Yesterday','Today (proj.)']:['Oct 2025','Sep 2026','Oct 2026 (proj.)'];const vals=D?[88.2,85.9,87.4]:[2512,2388,2451];
+        return {textStyle:{fontFamily:'IBM Plex Sans'},title:{text:D?'Daily':'Monthly',left:0,top:0,textStyle:{color:C.gray,fontSize:12,fontWeight:500}},tooltip:Object.assign({},TT,{axisPointer:{type:'shadow',shadowStyle:{color:'rgba(148,163,184,0.06)'}}}),grid:{left:4,right:60,top:30,bottom:4,containLabel:true},xAxis:{type:'value',show:false,min:D?0:0},yAxis:{type:'category',data:cats,axisLine:{show:false},axisTick:{show:false},axisLabel:{color:C.gray,fontSize:11}},
+          series:[{type:'bar',barWidth:14,data:vals.map((x,i)=>({value:x,itemStyle:{color:i===2?C.blue:'rgba(148,163,184,0.35)',borderRadius:[0,4,4,0]}})),label:{show:true,position:'right',color:C.text,fontFamily:'JetBrains Mono',fontSize:11,formatter:p=>f(p.value,D?1:0)},showBackground:true,backgroundStyle:{color:'rgba(148,163,184,0.06)',borderRadius:4}}]}}
+      case 't_heat':return {textStyle:{fontFamily:'IBM Plex Sans'},tooltip:{backgroundColor:'rgba(15,23,42,0.96)',borderColor:'rgba(148,163,184,0.22)',textStyle:{color:C.text,fontSize:12},formatter:p=>`${DAYS[p.value[1]]} ${H[p.value[0]]}<br/><b>${p.value[2]} MW</b>`},grid:{left:4,right:12,top:8,bottom:44,containLabel:true},xAxis:{type:'category',data:H,splitArea:{show:false},axisLine:{show:false},axisTick:{show:false},axisLabel:{color:C.gray,fontSize:10.5}},yAxis:{type:'category',data:DAYS,axisLine:{show:false},axisTick:{show:false},axisLabel:{color:C.gray,fontSize:11}},
+        visualMap:{min:8,max:13,calculable:false,orient:'horizontal',left:'center',bottom:0,itemWidth:10,itemHeight:180,textStyle:{color:C.gray,fontSize:10.5},inRange:{color:['#0F1B3D','#1E3A8A','#3B82F6','#10B981','#F59E0B']}},series:[{type:'heatmap',data:heat,itemStyle:{borderColor:'#0B1020',borderWidth:2,borderRadius:3}}]};
+      case 't_yoy':return B({xAxis:xc(MY,true),yAxis:yv('MWh',{min:7000}),series:[bar('2025',y25,'#475569',null,{itemStyle:{color:'rgba(148,163,184,0.35)',borderRadius:[4,4,0,0]}}),ln('2026',y26,C.blue,false,false,{showSymbol:true,symbol:'circle'})]});
+      case 't_sec':return B({xAxis:xc(M),yAxis:yv('kWh/t',{min:550}),series:[ln("Kellogg's",secK,C.blue,true),ln('Pringles',secP,C.green,true,false,{markLine:{symbol:'none',silent:true,lineStyle:{color:C.orange,type:'dashed'},label:{color:C.orange,fontSize:10.5,formatter:'Pringles target 860',position:'insideEndTop'},data:[{yAxis:860}]}})]});
+    }
+    return null;
+  }
+  spColor={total:C.blue,kCogen:C.green,grid:C.sky,gas:C.orange,sav:C.green,co2:C.green,kLoad:C.blue,steam:C.sky,kE:C.green,pP:C.blue,pE:C.blue,pM:C.sky,pMax:C.orange,pf:C.green,volt:C.sky,secK:C.blue,secP:C.green,lf:C.sky,peak:C.orange,yoy:C.green,self:C.green,cost:C.blue,avoid:C.green,rate:C.sky,gasc:C.orange,dem:C.sky};
+  renderVals(){
+    const s=this.state,v=s.v,rg=RANGES.find(r=>r.id===s.range),m=rg.m;
+    const total=v.kLoad+v.pP,grid=total-v.kCogen,kImp=Math.max(0,v.kLoad-v.kCogen),volt=(v.va+v.vb+v.vc)/3;
+    const K=(label,value,unit,icon,color,key,delta,good,sub)=>({label,value,unit,icon,color,tint:hexA(color,0.14),chart:'sp_'+key,delta,dColor:good?C.green:C.orange,sub});
+    const kp={
+      overview:[K('Total Consumption',f(total,2),'MW','icon-activity',C.blue,'total','+1.8%',false,"Kellogg's + Pringles"),K('Total Cogeneration',f(v.kCogen,2),'MW','icon-flame',C.green,'kCogen','+0.6%',true,f(v.kCogen/v.kLoad*100,1)+"% of Kellogg's load"),K('Utility Power Imported',f(grid,2),'MW','icon-zap',C.sky,'grid','-3.2%',true,'CFE · 2 independent feeders'),K('Gas Consumption',f(v.gas),'Nm³/h','icon-fuel',C.orange,'gas','+0.4%',false,"Cogeneration fuel · Kellogg's"),K('Carbon Reduction',f(v.kE/1000*0.238*m,1),'tCO₂e','icon-leaf',C.green,'co2','+4.7%',true,'vs. full grid supply · '+rg.sub)],
+      kellogg:[K('Plant Consumption',f(v.kLoad,2),'MW','icon-activity',C.blue,'kLoad','+1.2%',false,'Site total demand'),K('Cogeneration Output',f(v.kCogen,2),'MW','icon-flame',C.green,'kCogen','+0.6%',true,'GT-1 · rated 7.0 MW'),K('Natural Gas Consumption',f(v.gas),'Nm³/h','icon-fuel',C.orange,'gas','+0.4%',false,'Pemex pipeline · 4.2 bar'),K('Steam Production',f(v.steam,1),'t/h','icon-cloud',C.sky,'steam','+2.3%',true,'HRSG · 10 bar saturated'),K('Energy Generated',f(v.kE*m),'kWh','icon-battery-charging',C.green,'kE','+1.1%',true,'Cogeneration · '+rg.sub)],
+      pringles:[K('Active Power',f(v.pP,2),'MW','icon-activity',C.blue,'pP','+2.4%',false,'Main substation meter'),K('Energy Consumption Today',f(v.pE),'kWh','icon-gauge',C.blue,'pE','+1.7%',false,'Since 00:00'),K('Monthly Consumption',f(v.pM,1),'MWh','icon-calendar-days',C.sky,'pM','-2.6%',true,'October month to date'),K('Maximum Demand',f(v.pMax,2),'MW','icon-trending-up',C.orange,'pMax','+0.9%',false,'Today · contracted 4.8 MW'),K('Power Factor',f(v.pf,3),'','icon-sigma',C.green,'pf','+0.004',true,'CFE minimum 0.90 · target 0.95'),K('Average Voltage',f(volt,2),'kV','icon-plug-zap',C.sky,'volt','+0.2%',true,'13.2 kV nominal · L-L')],
+      trends:[K("SEC · Kellogg's",'618','kWh/t','icon-factory',C.blue,'secK','-2.4%',true,'12-month average'),K('SEC · Pringles','884','kWh/t','icon-building-2',C.green,'secP','-1.1%',true,'Target 860 kWh/t'),K('Load Factor','82.4','%','icon-percent',C.sky,'lf','+0.8 pt',true,'Average / peak demand'),K('Peak Demand MTD','13.62','MW','icon-trending-up',C.orange,'peak','+0.3%',false,'Oct 14 · 19:15'),K('YoY Consumption','-4.1','%','icon-chart-line',C.green,'yoy','-4.1%',true,'Jan–Oct 2026 vs 2025'),K('Self-generation Share','51.6','%','icon-flame',C.green,'self','+1.9 pt',true,'Cogeneration / total load')]
+    };
+    const nav=VIEWS.map(x=>{const a=x.id===s.view;return {...x,go:()=>this.go(x.id),expanded:!s.collapsed,justify:s.collapsed?'center':'flex-start',bg:a?'linear-gradient(90deg,rgba(59,130,246,0.22),rgba(59,130,246,0.06))':'transparent',color:a?'#F8FAFC':'#94A3B8',border:a?'rgba(59,130,246,0.35)':'transparent',shadow:a?'inset 2px 0 0 #3B82F6':'none'}});
+    const cur=VIEWS.find(x=>x.id===s.view);
+    const pq=[
+      {label:'Voltage L1-L2 / L2-L3 / L3-L1',value:`${v.va.toFixed(2)} / ${v.vb.toFixed(2)} / ${v.vc.toFixed(2)} kV`,w:((volt-12.5)/1.4*100).toFixed(0)+'%',color:C.sky},
+      {label:'Frequency',value:v.freq.toFixed(2)+' Hz',w:((v.freq-59.9)/0.2*100).toFixed(0)+'%',color:C.green},
+      {label:'THD Voltage (limit 5%)',value:v.thdV.toFixed(1)+' %',w:(v.thdV/5*100).toFixed(0)+'%',color:C.green},
+      {label:'THD Current (limit 8%)',value:v.thdI.toFixed(1)+' %',w:(v.thdI/8*100).toFixed(0)+'%',color:v.thdI>5.5?C.orange:C.green},
+      {label:'Voltage Unbalance (limit 2%)',value:v.unb.toFixed(2)+' %',w:(v.unb/2*100).toFixed(0)+'%',color:C.green}
+    ];
+    return {
+      toggleSide:()=>this.setState(x=>({collapsed:!x.collapsed})),
+      togglePause:()=>this.setState(x=>({paused:!x.paused})),
+      pauseIcon:s.paused?'icon-play':'icon-pause',liveLabel:s.paused?'PAUSED':'LIVE',liveColor:s.paused?C.orange:C.green,
+      clock:s.now.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' · '+tstr(s.now),
+      ranges:RANGES.map(r=>({label:r.label,go:()=>this.setState({range:r.id}),bg:r.id===s.range?'#3B82F6':'transparent',color:r.id===s.range?'#fff':'#94A3B8'})),
+      headerRef:this.headerRef,sideTop:(s.hH||64)+'px',sideH:`calc(100vh - ${s.hH||64}px)`,
+      sideW:s.collapsed?'72px':'236px',expanded:!s.collapsed,nav,
+      pageTitle:cur.label,pageSub:cur.sub,
+      hasKpis:!!kp[s.view],kpis:kp[s.view]||[],
+      isOverview:s.view==='overview',isKellogg:s.view==='kellogg',isPringles:s.view==='pringles',isTrends:s.view==='trends',isSettings:s.view==='settings',
+      flow:{grid:f(grid,2),kImp:f(kImp,2),pImp:f(v.pP,2),cogen:f(v.kCogen,2),kLoad:f(v.kLoad,2),pLoad:f(v.pP,2),gas:f(v.gas),steam:f(v.steam,1),eff:f(v.eff,1),freq:v.freq.toFixed(2),pf:v.pf.toFixed(3),volt:volt.toFixed(2),selfPct:f(v.kCogen/v.kLoad*100,1),selfW:(v.kCogen/v.kLoad*100).toFixed(1)+'%',complexPct:f(v.kCogen/total*100,1),total:f(total,2)},
+      effE:f(v.eff*0.432,1),effT:f(v.eff*0.568,1),
+      sysStatus:[badge('CFE Feeder · Kellogg\'s','Online',f(kImp,2)+' MW · 13.2 kV'),badge('CFE Feeder · Pringles','Online',f(v.pP,2)+' MW · 13.2 kV'),badge('Cogeneration GT-1','Online',f(v.kCogen,2)+' MW · η '+f(v.eff,1)+'%'),badge('HRSG Steam System','Online',f(v.steam,1)+' t/h'),badge('Capacitor Bank CB-3','Warning','Step 4 not responding')],
+      kAssets:[badge('Gas Turbine GT-1','Online',f(v.kCogen,2)+' MW · 9,840 rpm'),badge('Heat Recovery Steam Gen.','Online',f(v.steam,1)+' t/h · 10.2 bar'),badge('Auxiliary Boiler B-2','Warning','Stack temp 212 °C'),badge('CFE Tie Breaker 52-K','Online','Closed · '+f(kImp,2)+' MW'),badge('Absorption Chiller CH-1','Offline','Scheduled maintenance')],
+      pAssets:[badge('Main Substation 13.2 kV','Online',f(v.pP,2)+' MW'),badge('Fryer Line 1','Online','1.18 MW'),badge('Fryer Line 2','Online','1.07 MW'),badge('Capacitor Bank CB-3','Warning','Step 4 not responding'),badge('Air Compressors','Online','0.42 MW · 7.1 bar')],
+      alerts:[{icon:'icon-triangle-alert',color:C.orange,title:'Auxiliary Boiler B-2',text:"Stack temperature 212 °C above 200 °C limit · Kellogg's",time:'14:32'},{icon:'icon-triangle-alert',color:C.orange,title:'Capacitor Bank CB-3',text:'Step 4 not responding · Pringles',time:'13:58'},{icon:'icon-info',color:C.sky,title:'Absorption Chiller CH-1',text:'Offline for scheduled maintenance',time:'08:00'}],
+      pq,
+      dbFields:[{label:'Server URL',ph:'https://influxdb.plant.local:8086'},{label:'Organization',ph:'food-manufacturing'},{label:'Bucket',ph:'energy_telemetry'},{label:'API Token',ph:'••••••••••••••••••••'},{label:'Measurements',ph:'kelloggs_cogen, pringles_main'}],
+      thresholds:[{label:'Minimum power factor',sub:'Pringles main substation',value:'0.95'},{label:'Maximum demand',sub:'Complex total · contracted 14 MW',value:'13.5 MW'},{label:'THD current',sub:'IEEE 519 reference',value:'8.0 %'},{label:'Boiler stack temperature',sub:'Auxiliary Boiler B-2',value:'200 °C'},{label:'Minimum CHP efficiency',sub:'Cogeneration GT-1',value:'72 %'}]
+    };
+  }
+}
+</script>
+</body>
+</html>
