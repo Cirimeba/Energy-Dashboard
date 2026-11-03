@@ -503,11 +503,33 @@ class Component extends DCLogic {
     if(window.innerWidth<1100) this.setState({collapsed:true});
     this.ro=new ResizeObserver(es=>requestAnimationFrame(()=>es.forEach(e=>{const c=window.echarts&&echarts.getInstanceByDom(e.target);c&&c.resize()})));
     this.timer=setInterval(()=>this.state.paused?null:this.tick(),2000);
+    this.influxTimer=setInterval(()=>this.loadInflux(),10000);
+    this.loadInflux();
     this.waitCharts();
     if(this.hdr){this.hro=new ResizeObserver(()=>requestAnimationFrame(()=>{if(!this.hdr)return;const h=Math.round(this.hdr.getBoundingClientRect().height);if(h!==this.state.hH)this.setState({hH:h})}));this.hro.observe(this.hdr)}
   }
   headerRef=el=>{this.hdr=el};
-  componentWillUnmount(){clearInterval(this.timer);this.hro&&this.hro.disconnect();this.ro&&this.ro.disconnect()}
+  componentWillUnmount(){clearInterval(this.timer);clearInterval(this.influxTimer);this.hro&&this.hro.disconnect();this.ro&&this.ro.disconnect()}
+  async loadInflux(){
+    try{
+      const response=await fetch('/api/telemetry',{cache:'no-store'});
+      if(!response.ok)return;
+      const data=await response.json();
+      if(!data.configured||data.source!=='influxdb')return;
+      this.setState(s=>{
+        const v={...s.v};
+        if(Number.isFinite(data.kLoad))v.kLoad=data.kLoad;
+        if(Number.isFinite(data.pf))v.pf=data.pf;
+        if(Number.isFinite(data.freq))v.freq=data.freq;
+        if(Number.isFinite(data.volt))v.volt=data.volt;
+        if(Number.isFinite(data.kE))v.kE=data.kE;
+        if(Number.isFinite(data.pE))v.pE=data.pE;
+        if(Number.isFinite(data.gas))v.gas=data.gas;
+        if(Number.isFinite(data.steam))v.steam=data.steam;
+        return {v};
+      });
+    }catch(error){console.warn('Unable to refresh telemetry from InfluxDB:',error);}
+  }
   componentDidUpdate(){this.sync()}
   waitCharts(){if(window.echarts){this.ready=true;this.sync()}else setTimeout(()=>this.waitCharts(),120)}
   tick(){
