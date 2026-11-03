@@ -460,7 +460,8 @@ class Component extends DCLogic {
       wK:0,wP:0,wKTod:0,wPTod:0,wMon:0,wWW:0,reuse:0,ct:0,hrsg:0,tank:0,cip:0,wPress:0,
       aux:0,oven:0,fry:0,pboil:0,gPress:0,gKTod:0,gPTod:0,gMon:0};
     const rt={t:[],l:[],c:[],g:[],wk:[],ct:[],gt:[],aux:[],oven:[]},hist={};
-    this.state={view:'overview',range:'today',collapsed:false,paused:false,grafanaPanels:[],kelloggActual:null,kelloggActualTime:null,kelloggCogeneration:null,kelloggCogenerationTime:null,now:new Date(),v,rt,hist};
+    const savedView=(location.hash||'').replace(/^#\/?/,'')||localStorage.getItem('ems-view')||'overview';
+    this.state={view:VIEWS[savedView]?savedView:'overview',range:'today',collapsed:false,paused:false,grafanaPanels:[],kelloggActual:null,kelloggActualTime:null,kelloggCogeneration:null,kelloggCogenerationTime:null,now:new Date(),v,rt,hist};
     this.spCol={};
   }
   derive(v){
@@ -470,6 +471,8 @@ class Component extends DCLogic {
       gT:gK+gP,gK,gP,gTod:v.gKTod+v.gPTod,gKTod:v.gKTod,gPTod:v.gPTod,gMon:v.gMon,gCog:v.gas/(gK+gP)*100,gPress:v.gPress,gGJ:(gK+gP)*0.0373,gt1:v.gas,aux:v.aux,oven:v.oven,heat:v.gas/v.kCogen,fry:v.fry,pboil:v.pboil,gSpecP:gP/4.2};
   }
   componentDidMount(){
+    this.viewHash=()=>{const view=(location.hash||'').replace(/^#\/?/,'');if(VIEWS[view]&&view!==this.state.view)this.go(view)};
+    window.addEventListener('hashchange',this.viewHash);
     if(window.innerWidth<1100) this.setState({collapsed:true});
     this.ro=new ResizeObserver(es=>requestAnimationFrame(()=>es.forEach(e=>{const c=window.echarts&&echarts.getInstanceByDom(e.target);c&&c.resize()})));
     this.loadKelloggActual();
@@ -480,7 +483,7 @@ class Component extends DCLogic {
     if(this.hdr){this.hro=new ResizeObserver(()=>requestAnimationFrame(()=>{if(!this.hdr)return;const h=Math.round(this.hdr.getBoundingClientRect().height);if(h!==this.state.hH)this.setState({hH:h})}));this.hro.observe(this.hdr)}
   }
   headerRef=el=>{this.hdr=el};
-  componentWillUnmount(){clearInterval(this.actualTimer);document.removeEventListener('visibilitychange',this.actualVisibility);this.hro&&this.hro.disconnect();this.ro&&this.ro.disconnect()}
+  componentWillUnmount(){clearInterval(this.actualTimer);document.removeEventListener('visibilitychange',this.actualVisibility);window.removeEventListener('hashchange',this.viewHash);this.hro&&this.hro.disconnect();this.ro&&this.ro.disconnect()}
   async loadKelloggActual(){
     try{
       const response=await fetch(`/api/actual?t=${Date.now()}`,{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
@@ -511,6 +514,8 @@ class Component extends DCLogic {
   }
   go(view){
     if(window.echarts) document.querySelectorAll('[data-chart]').forEach(el=>{const c=echarts.getInstanceByDom(el);c&&c.dispose();delete el.dataset.cid});
+    localStorage.setItem('ems-view',view);
+    if(location.hash!==`#${view}`) history.replaceState(null,'',`#${view}`);
     this.setState({view,grafanaPanels:[]},()=>{if(view==='e_kellogg')this.loadKelloggActual()});window.scrollTo(0,0);
   }
   opt(id){
@@ -676,9 +681,11 @@ class Component extends DCLogic {
         const cards=(kp[s.view]||[]).map(k=>({...k,value:'Sin datos',unit:'',delta:'',sub:'Sin datos'}));
         if(s.view==='e_kellogg'&&cards[0]){
           const actualTime=s.kelloggActualTime?new Date(s.kelloggActualTime).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}):null;
-          cards[0]={...cards[0],label:'Demanda actual',value:s.kelloggActual===null?'Sin datos':f(s.kelloggActual,0),unit:'kW',sub:actualTime?`Actualizado ${actualTime}`:'energia_periodo · planta=queretaro'};
+          const demand=s.kelloggActual===null||s.kelloggCogeneration===null?null:s.kelloggActual-s.kelloggCogeneration;
+          cards[0]={...cards[0],label:'Demanda actual',value:demand===null?'Sin datos':f(demand,0),unit:'kW',sub:actualTime?`Actualizado ${actualTime}`:'energia_periodo · planta=queretaro'};
           const cogenerationTime=s.kelloggCogenerationTime?new Date(s.kelloggCogenerationTime).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}):null;
           cards[1]={...cards[1],label:'Cogeneración actual',value:s.kelloggCogeneration===null?'Sin datos':f(s.kelloggCogeneration,0),unit:'kW',sub:cogenerationTime?`Actualizado ${cogenerationTime}`:'energia_periodo · planta=queretaro'};
+          cards[2]={...cards[2],label:'CFE Import',value:s.kelloggActual===null?'Sin datos':f(s.kelloggActual,0),unit:'kW',sub:actualTime?`Actualizado ${actualTime}`:'energia_periodo · planta=queretaro'};
         }
         return cards;
       })(),
