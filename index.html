@@ -461,7 +461,7 @@ class Component extends DCLogic {
       aux:0,oven:0,fry:0,pboil:0,gPress:0,gKTod:0,gPTod:0,gMon:0};
     const rt={t:[],l:[],c:[],g:[],wk:[],ct:[],gt:[],aux:[],oven:[]},hist={};
     const savedView=(location.hash||'').replace(/^#\/?/,'')||localStorage.getItem('ems-view')||'overview';
-    this.state={view:VIEWS[savedView]?savedView:'overview',range:'today',collapsed:false,paused:false,grafanaPanels:[],kelloggActual:null,kelloggActualTime:null,kelloggCogeneration:null,kelloggCogenerationTime:null,kelloggGas:null,kelloggGasTime:null,now:new Date(),v,rt,hist};
+    this.state={view:VIEWS[savedView]?savedView:'overview',range:'today',collapsed:false,paused:false,grafanaPanels:[],kelloggActual:null,kelloggActualTime:null,kelloggCogeneration:null,kelloggCogenerationTime:null,kelloggGas:null,kelloggGasTime:null,kelloggSteam:null,kelloggSteamTime:null,now:new Date(),v,rt,hist};
     this.spCol={};
   }
   derive(v){
@@ -495,9 +495,11 @@ class Component extends DCLogic {
         kelloggCogeneration:Number.isFinite(data.cogenerationValue)?data.cogenerationValue:null,
         kelloggCogenerationTime:data.cogenerationTime||null,
         kelloggGas:Number.isFinite(data.gasValue)?data.gasValue:null,
-        kelloggGasTime:data.gasTime||null
+        kelloggGasTime:data.gasTime||null,
+        kelloggSteam:Number.isFinite(data.steamValue)?data.steamValue:null,
+        kelloggSteamTime:data.steamTime||null
       });
-    }catch(error){this.setState({kelloggActual:null,kelloggCogeneration:null,kelloggGas:null})}
+    }catch(error){this.setState({kelloggActual:null,kelloggCogeneration:null,kelloggGas:null,kelloggSteam:null})}
   }
   componentDidUpdate(){this.sync()}
   waitCharts(){if(window.echarts){this.ready=true;this.sync()}else setTimeout(()=>this.waitCharts(),120)}
@@ -690,6 +692,8 @@ class Component extends DCLogic {
           cards[2]={...cards[2],label:'CFE Import',value:s.kelloggActual===null?'Sin datos':f(s.kelloggActual,0),unit:'kW',sub:actualTime?`Actualizado ${actualTime}`:'energia_periodo · planta=queretaro'};
           const gasTime=s.kelloggGasTime?new Date(s.kelloggGasTime).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}):null;
           cards[3]={...cards[3],label:'Consumo de gas · 5 min',value:s.kelloggGas===null?'Sin datos':f(s.kelloggGas,2),unit:'Nm³',sub:gasTime?`Actualizado ${gasTime}`:'SQLDB_GN_nm3 · diferencia acumulada'};
+          const steamTime=s.kelloggSteamTime?new Date(s.kelloggSteamTime).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}):null;
+          cards[4]={...cards[4],label:'Steam Production',value:s.kelloggSteam===null?'Sin datos':f(s.kelloggSteam,1),unit:'kg/h',sub:steamTime?`Actualizado ${steamTime}`:'colector_energia · SQLDB_VaporCD_Kgh'};
         }
         return cards;
       })(),

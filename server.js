@@ -132,17 +132,29 @@ async function actualKelloggDemand() {
     '|> aggregateWindow(every: 5m, fn: sum, createEmpty: false, timeSrc: "_start")',
     '|> last()'
   ].join("\n");
+  const steamQuery = [
+    `from(bucket: "${INFLUX_BUCKET}")`,
+    '|> range(start: -24h)',
+    '|> filter(fn: (r) => r["_measurement"] == "colector_energia")',
+    '|> filter(fn: (r) => r["host"] == "ThinkStation")',
+    '|> filter(fn: (r) => r["_field"] == "SQLDB_VaporCD_Kgh")',
+    '|> aggregateWindow(every: 5m, fn: mean, createEmpty: false, timeSrc: "_start")',
+    '|> last()'
+  ].join("\n");
 
   const demandRows = await executeQuery(demandQuery);
   const generationRows = await executeQuery(generationQuery);
   const gasRows = await executeQuery(gasQuery);
+  const steamRows = await executeQuery(steamQuery);
   const demand = demandRows[demandRows.length - 1];
   const generation = generationRows[generationRows.length - 1];
   const gas = gasRows[gasRows.length - 1];
+  const steam = steamRows[steamRows.length - 1];
 
   const value = demand ? Number(demand._value) : NaN;
   const cogenerationValue = generation ? Number(generation._value) : NaN;
   const gasValue = gas ? Number(gas._value) : NaN;
+  const steamValue = steam ? Number(steam._value) : NaN;
 
   return {
     value: Number.isFinite(value) ? value : null,
@@ -153,7 +165,10 @@ async function actualKelloggDemand() {
     cogenerationTime: generation ? generation._time : null,
     gasValue: Number.isFinite(gasValue) ? gasValue : null,
     gasUnit: "Nm³",
-    gasTime: gas ? gas._time : null
+    gasTime: gas ? gas._time : null,
+    steamValue: Number.isFinite(steamValue) ? steamValue : null,
+    steamUnit: "kg/h",
+    steamTime: steam ? steam._time : null
   };
 }
 
