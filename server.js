@@ -8,6 +8,8 @@ const INFLUX_URL = (process.env.INFLUX_URL || "").replace(/\/$/, "");
 const INFLUX_ORG = process.env.INFLUX_ORG || "botlabs";
 const INFLUX_BUCKET = process.env.INFLUX_BUCKET || "energia";
 const INFLUX_TOKEN = process.env.INFLUX_TOKEN || "";
+const GAS_PCS_MJ_NM3 = Number(process.env.GAS_PCS_MJ_NM3 || 38.75);
+const MMBTU_PER_MJ_PER_NM3_CONVERSION = 1055.06;
 const ADMIN_USER = process.env.ADMIN_USER || "admin";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin";
 const VIEWER_USER = process.env.VIEWER_USER || "viewer";
@@ -161,7 +163,10 @@ async function actualKelloggDemand() {
 
   const value = demand ? Number(demand._value) : NaN;
   const cogenerationValue = generation ? Number(generation._value) : NaN;
-  const gasValue = gas ? Number(gas._value) : NaN;
+  const gasNm3Value = gas ? Number(gas._value) : NaN;
+  const gasValue = Number.isFinite(gasNm3Value)
+    ? gasNm3Value * GAS_PCS_MJ_NM3 / MMBTU_PER_MJ_PER_NM3_CONVERSION
+    : NaN;
   const steamValue = steam ? Number(steam._value) : NaN;
 
   return {
@@ -172,7 +177,7 @@ async function actualKelloggDemand() {
     cogenerationUnit: "kW",
     cogenerationTime: generation ? generation._time : null,
     gasValue: Number.isFinite(gasValue) ? gasValue : null,
-    gasUnit: "Nm³",
+    gasUnit: "MMBtu/5 min",
     gasTime: gas ? gas._time : null,
     steamValue: Number.isFinite(steamValue) ? steamValue : null,
     steamUnit: "kg/h",
