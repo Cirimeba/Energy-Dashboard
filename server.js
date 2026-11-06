@@ -1,12 +1,18 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 
 const PORT = Number(process.env.PORT || 8080);
 const INFLUX_URL = (process.env.INFLUX_URL || "").replace(/\/$/, "");
 const INFLUX_ORG = process.env.INFLUX_ORG || "botlabs";
 const INFLUX_BUCKET = process.env.INFLUX_BUCKET || "energia";
 const INFLUX_TOKEN = process.env.INFLUX_TOKEN || "";
+const ADMIN_USER = process.env.ADMIN_USER || "admin";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin";
+const VIEWER_USER = process.env.VIEWER_USER || "viewer";
+const VIEWER_PASSWORD = process.env.VIEWER_PASSWORD || "viewer";
+const SESSION_SECRET = process.env.SESSION_SECRET || INFLUX_TOKEN || "change-this-session-secret";
 const ROOT = __dirname;
 const DASHBOARD = JSON.parse(fs.readFileSync(path.join(ROOT, "grafana-dashboard.json"), "utf8"));
 
@@ -174,23 +180,25 @@ async function actualKelloggDemand() {
   };
 }
 
-async function kelloggElectricalHistory() {
+async function kelloggElectricalHistory(rangeStart, rangeStop, aggregateEvery = "5m") {
+  const historyStart = rangeStart || "-24h";
+  const historyStop = rangeStop || "now()";
   const cfeQuery = [
     `from(bucket: "${INFLUX_BUCKET}")`,
-    '|> range(start: -24h)',
+    `|> range(start: ${historyStart}, stop: ${historyStop})`,
     '|> filter(fn: (r) => r["_measurement"] == "energia_periodo")',
     '|> filter(fn: (r) => r["planta"] == "queretaro")',
     '|> filter(fn: (r) => r["_field"] == "u_kw")',
-    '|> aggregateWindow(every: 5m, fn: max, createEmpty: false, timeSrc: "_start")',
+    `|> aggregateWindow(every: ${aggregateEvery}, fn: max, createEmpty: false, timeSrc: "_start")`,
     '|> group()',
   ].join("\n");
   const generationQuery = [
     `from(bucket: "${INFLUX_BUCKET}")`,
-    '|> range(start: -24h)',
+    `|> range(start: ${historyStart}, stop: ${historyStop})`,
     '|> filter(fn: (r) => r["_measurement"] == "energia_periodo")',
     '|> filter(fn: (r) => r["planta"] == "queretaro")',
     '|> filter(fn: (r) => r["_field"] == "gen_kw")',
-    '|> aggregateWindow(every: 5m, fn: mean, createEmpty: false, timeSrc: "_start")',
+    `|> aggregateWindow(every: ${aggregateEvery}, fn: mean, createEmpty: false, timeSrc: "_start")`,
     '|> group()',
   ].join("\n");
   const [cfeRows, generationRows] = await Promise.all([
@@ -221,13 +229,63 @@ async function kelloggElectricalHistory() {
     }));
 }
 
+function readCookies(req) {
+    return Object.fromEntries((req.headers.cookie || "").split(";").map(part => {
+      const index = part.indexOf("=");
+      return index === -1 ? ["", ""] : [part.slice(0, index).trim(), decodeURIComponent(part.slice(index + 1).trim())];
+    }).filter(([key]) => key));
+  }
+
+function sessionToken(user, role) {
+    const payload = Buffer.from(JSON.stringify({ user, role, exp: Date.now() + 12 * 60 * 60 * 1000 })).toString("base64url");
+    const signature = crypto.createHmac("sha256", SESSION_SECRET).update(payload).digest("base64url");
+    return `${payload}.${signature}`;
+  }
+
+function readSession(req) {
+    const token = readCookies(req).ems_session;
+    if (!token) return null;
+    const [payload, signature] = token.split(".");
+    if (!payload || !signature) return null;
+    const expected = crypto.createHmac("sha256", SESSION_SECRET).update(payload).digest("base64url");
+    const signatureBuffer = Buffer.from(signature);
+    const expectedBuffer = Buffer.from(expected);
+    if (signatureBuffer.length !== expectedBuffer.length || !crypto.timingSafeEqual(signatureBuffer, expectedBuffer)) return null;
+    try {
+      const session = JSON.parse(Buffer.from(payload, "base64url").toString());
+      return session.exp > Date.now() ? session : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+function json(res, status, value, extraHeaders = {}) {
+    res.writeHead(status, { "Content-Type": "application/json", "Cache-Control": "no-store", ...extraHeaders });
+    res.end(JSON.stringify(value));
+  }
+
+async function readJsonBody(req) {
+    let body = "";
+    for await (const chunk of req) body += chunk;
+    return JSON.parse(body || "{}");
+  }
+
+function requireSession(req, res, adminOnly = false) {
+    const session = readSession(req);
+    if (!session || (adminOnly && session.role !== "admin")) {
+      json(res, 401, { error: "Unauthorized" });
+      return null;
+}
+
 function staticFile(req, res) {
-  const pathname = decodeURIComponent(req.url.split("?")[0]);
-  const relative = pathname === "/" ? "index.html" : pathname.replace(/^\/+/, "");
-  const filename = path.resolve(ROOT, relative);
-  if (!filename.startsWith(ROOT + path.sep)) {
-    res.writeHead(403).end();
-    return;
+    const pathname = decodeURIComponent(req.url.split("?")[0]);
+    const relative = pathname === "/" ? "index.html" : pathname.replace(/^\/+/, "");
+    const filename = path.resolve(ROOT, relative);
+    if (!filename.startsWith(ROOT + path.sep)) {
+      res.writeHead(403).end();
+      return;
+    }
+    return session;
   }
   fs.readFile(filename, (error, data) => {
     if (error) { res.writeHead(404).end("Not found"); return; }
@@ -238,12 +296,33 @@ function staticFile(req, res) {
 
 http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
+  if (url.pathname === "/api/auth/login" && req.method === "POST") {
+    try {
+      const { username, password } = await readJsonBody(req);
+      let role = null;
+      if (username === ADMIN_USER && password === ADMIN_PASSWORD) role = "admin";
+      else if (username === VIEWER_USER && password === VIEWER_PASSWORD) role = "viewer";
+      if (!role) return json(res, 401, { error: "Usuario o contraseña incorrectos" });
+      const token = sessionToken(username, role);
+      return json(res, 200, { user: username, role }, { "Set-Cookie": `ems_session=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=43200${process.env.NODE_ENV === "production" ? "; Secure" : ""}` });
+    } catch (_) {
+      return json(res, 400, { error: "Solicitud inválida" });
+    }
+  }
+  if (url.pathname === "/api/auth/me") {
+    const session = readSession(req);
+    return json(res, session ? 200 : 401, session ? { user: session.user, role: session.role } : { error: "Unauthorized" });
+  }
+  if (url.pathname === "/api/auth/logout" && req.method === "POST") {
+    return json(res, 200, { ok: true }, { "Set-Cookie": "ems_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0" });
+  }
   if (url.pathname === "/api/health") {
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ status: "ok", influxConfigured: Boolean(INFLUX_URL && INFLUX_TOKEN) }));
     return;
   }
   if (url.pathname === "/api/actual") {
+    if (!requireSession(req, res)) return;
     try {
       const data = await actualKelloggDemand();
       res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-store, no-cache, must-revalidate", "Pragma": "no-cache", "Expires": "0" });
@@ -255,8 +334,24 @@ http.createServer(async (req, res) => {
     return;
   }
   if (url.pathname === "/api/kellogg/electrical-history") {
+    if (!requireSession(req, res)) return;
     try {
-      const data = await kelloggElectricalHistory();
+      const range = url.searchParams.get("range");
+      const aggregate = range === "7d" ? "15m" : range === "30d" || range === "custom" ? "30m" : "5m";
+      let start = "-24h";
+      let stop = "now()";
+      if (range === "7d") start = "-7d";
+      else if (range === "30d") start = "-30d";
+      else if (range === "custom") {
+        const customStart = url.searchParams.get("start");
+        const customStop = url.searchParams.get("stop");
+        if (!customStart || !customStop || !Number.isFinite(Date.parse(customStart)) || !Number.isFinite(Date.parse(customStop))) {
+          return json(res, 400, { error: "Invalid custom range" });
+        }
+        start = `time(v: "${new Date(customStart).toISOString()}")`;
+        stop = `time(v: "${new Date(customStop).toISOString()}")`;
+      }
+      const data = await kelloggElectricalHistory(start, stop, aggregate);
       res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-store" });
       res.end(JSON.stringify({ points: data }));
     } catch (error) {
@@ -267,6 +362,7 @@ http.createServer(async (req, res) => {
   }
   const match = url.pathname.match(/^\/api\/panels\/([^/]+)$/);
   if (match) {
+    if (!requireSession(req, res)) return;
     try {
       const data = await panelData(match[1], {
         start: url.searchParams.get("start"),

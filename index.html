@@ -23,6 +23,20 @@ input{font-family:inherit}
 ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:rgba(148,163,184,.2);border-radius:4px}::-webkit-scrollbar-track{background:transparent}
 </style>
 </helmet>
+<sc-if value="{{ showLogin }}" hint-placeholder-val="{{ true }}">
+  <div style="min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(700px 420px at 50% 20%,rgba(59,130,246,0.16),transparent 70%),#0B1020">
+    <div style="width:min(390px,100%);padding:28px;border-radius:18px;border:1px solid rgba(148,163,184,0.16);background:rgba(15,23,42,0.92);box-shadow:0 24px 80px rgba(0,0,0,0.45)">
+      <div style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:#2563EB;color:#fff;margin-bottom:18px"><i class="icon-zap" style="font-size:22px"></i></div>
+      <div style="font-size:22px;font-weight:600;color:#F8FAFC">Energy Management System</div>
+      <div style="font-size:12px;color:#94A3B8;margin-top:5px;margin-bottom:22px">Inicia sesión para acceder al dashboard</div>
+      <label style="display:flex;flex-direction:column;gap:7px;font-size:12px;color:#CBD5E1">Usuario<input id="loginUser" autocomplete="username" style="height:42px;padding:0 12px;border-radius:9px;border:1px solid rgba(148,163,184,0.18);background:#0B1020;color:#F8FAFC;font-size:13px"></input></label>
+      <label style="display:flex;flex-direction:column;gap:7px;font-size:12px;color:#CBD5E1;margin-top:14px">Contraseña<input id="loginPassword" type="password" autocomplete="current-password" style="height:42px;padding:0 12px;border-radius:9px;border:1px solid rgba(148,163,184,0.18);background:#0B1020;color:#F8FAFC;font-size:13px"></input></label>
+      <div style="min-height:18px;margin-top:9px;font-size:12px;color:#F87171">{{ loginError }}</div>
+      <button onClick="{{ login }}" style="width:100%;height:42px;border-radius:9px;border:0;background:#2563EB;color:#fff;font:inherit;font-size:13px;font-weight:600;cursor:pointer">Iniciar sesión</button>
+    </div>
+  </div>
+</sc-if>
+<sc-if value="{{ authenticated }}" hint-placeholder-val="{{ false }}">
 <div style="min-height:100vh;background:radial-gradient(1100px 600px at 8% -10%,rgba(59,130,246,0.13),transparent 60%),radial-gradient(900px 500px at 100% 0%,rgba(16,185,129,0.07),transparent 60%),#0B1020;background-attachment:fixed;color:#E2E8F0">
 
 <header ref="{{ headerRef }}" style="position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:16px;flex-wrap:wrap;min-height:64px;padding:10px 20px;background:rgba(11,16,32,0.78);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(148,163,184,0.12)">
@@ -41,6 +55,14 @@ input{font-family:inherit}
         <button onClick="{{ r.go }}" style="border:0;cursor:pointer;font:inherit;font-size:12px;font-weight:500;padding:6px 11px;border-radius:7px;white-space:nowrap;flex:0 0 auto;background:{{ r.bg }};color:{{ r.color }}">{{ r.label }}</button>
       </sc-for>
     </div>
+    <sc-if value="{{ customRangeOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;gap:6px;padding:3px">
+        <input id="rangeStart" type="date" value="{{ customStart }}" style="height:30px;border-radius:7px;border:1px solid rgba(148,163,184,0.18);background:#0B1020;color:#CBD5E1;padding:0 7px;font-size:11px">
+        <span style="font-size:11px;color:#64748B">a</span>
+        <input id="rangeStop" type="date" value="{{ customStop }}" style="height:30px;border-radius:7px;border:1px solid rgba(148,163,184,0.18);background:#0B1020;color:#CBD5E1;padding:0 7px;font-size:11px">
+        <button onClick="{{ applyCustomRange }}" style="height:30px;border:0;border-radius:7px;background:#2563EB;color:#fff;padding:0 9px;font:inherit;font-size:11px;cursor:pointer">Aplicar</button>
+      </div>
+    </sc-if>
     <div style="display:flex;align-items:center;gap:10px;padding:6px 8px 6px 12px;border-radius:10px;background:rgba(148,163,184,0.06);border:1px solid rgba(148,163,184,0.12)">
       <span style="width:8px;height:8px;border-radius:50%;background:{{ liveColor }};animation:pulse 2s infinite"></span>
       <div style="display:flex;flex-direction:column;line-height:1.15">
@@ -53,10 +75,10 @@ input{font-family:inherit}
     <div style="display:flex;align-items:center;gap:10px;padding:4px 10px 4px 4px;border-radius:12px;border:1px solid rgba(148,163,184,0.12);background:rgba(148,163,184,0.05)">
       <div style="width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(140deg,#334155,#1E293B);font-size:12px;font-weight:600;color:#E2E8F0;border:1px solid rgba(148,163,184,0.2)">AR</div>
       <div style="display:flex;flex-direction:column;line-height:1.2">
-        <span style="font-size:12.5px;font-weight:600;color:#E2E8F0">A. Ramírez</span>
-        <span style="font-size:10.5px;color:#94A3B8">Plant Manager</span>
+        <span style="font-size:12.5px;font-weight:600;color:#E2E8F0">{{ currentUser }}</span>
+        <span style="font-size:10.5px;color:#94A3B8">{{ currentRole }}</span>
       </div>
-      <i class="icon-chevron-down" style="font-size:14px;color:#94A3B8"></i>
+      <button onClick="{{ logout }}" title="Cerrar sesión" style="border:0;background:transparent;color:#94A3B8;cursor:pointer;padding:2px"><i class="icon-log-out" style="font-size:14px"></i></button>
     </div>
   </div>
 </header>
@@ -410,6 +432,7 @@ input{font-family:inherit}
   </main>
 </div>
 </div>
+</sc-if>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 const C={blue:'#3B82F6',green:'#10B981',orange:'#F59E0B',red:'#EF4444',gray:'#94A3B8',sky:'#60A5FA',water:'#38BDF8',text:'#E2E8F0',grid:'rgba(148,163,184,0.09)'};
@@ -434,7 +457,7 @@ const topBar=(name,data,color,stack,extra)=>bar(name,data,color,stack,Object.ass
 const gauge=(val,min,max,dec,unit,color,name)=>({series:[{type:'gauge',min,max,startAngle:215,endAngle:-35,radius:'95%',center:['50%','58%'],progress:{show:true,width:12,roundCap:true,itemStyle:{color,shadowColor:color,shadowBlur:12}},axisLine:{roundCap:true,lineStyle:{width:12,color:[[1,'rgba(148,163,184,0.12)']]}},axisTick:{distance:-26,length:4,lineStyle:{color:'rgba(148,163,184,0.35)',width:1}},splitLine:{distance:-28,length:8,lineStyle:{color:'rgba(148,163,184,0.45)',width:1.5}},splitNumber:5,axisLabel:{show:false},pointer:{show:false},anchor:{show:false},title:{offsetCenter:[0,'32%'],color:C.gray,fontSize:11},detail:{valueAnimation:true,offsetCenter:[0,'0%'],fontSize:26,fontWeight:600,fontFamily:'JetBrains Mono',color:'#F8FAFC',formatter:v=>v.toFixed(dec)+unit},data:[{value:val,name}]}]});
 const donut=(data,big,small,unit)=>({tooltip:Object.assign({},TI,{formatter:p=>`${p.name}<br/><b>${f(p.value)} ${unit}</b> · ${p.percent.toFixed(1)}%`}),legend:Object.assign({},LG,{top:'middle',right:8,orient:'vertical'}),title:{text:big,subtext:small,left:'34%',top:'40%',textAlign:'center',textStyle:{color:'#F8FAFC',fontFamily:'JetBrains Mono',fontSize:22,fontWeight:600},subtextStyle:{color:C.gray,fontSize:11}},series:[{type:'pie',radius:['58%','80%'],center:['35%','52%'],padAngle:2,itemStyle:{borderRadius:6},label:{show:false},data:data.map(d=>({name:d[0],value:d[1],itemStyle:{color:d[2]}}))}]});
 const LIVE=['k_rt','k_eff','k_steamG','ov_mix','p_pf','wk_rt','wk_tank','wp_press','gk_rt','gk_spec','gp_press','g_use'];
-const RANGES=[{id:'today',label:'Today',m:1,sub:'today'},{id:'7d',label:'7 Days',m:10.2,sub:'last 7 days'},{id:'30d',label:'30 Days',m:43.6,sub:'last 30 days'}];
+const RANGES=[{id:'live',label:'Live',m:1,sub:'live'},{id:'7d',label:'7 Days',m:10.2,sub:'last 7 days'},{id:'30d',label:'30 Days',m:43.6,sub:'last 30 days'},{id:'custom',label:'Custom',m:0,sub:'selected period'}];
 const UT={e:{name:'Energy',icon:'icon-zap',color:C.blue},w:{name:'Water',icon:'icon-droplets',color:C.water},g:{name:'Gas',icon:'icon-flame',color:C.orange}};
 const VIEWS={overview:{label:'Overview',icon:'icon-layout-dashboard',crumbs:['Overview'],title:'Overview',sub:'Key indicators for energy, water and gas across both sites'}};
 ['e','w','g'].forEach(u=>{const n=UT[u].name;
@@ -461,7 +484,8 @@ class Component extends DCLogic {
       aux:0,oven:0,fry:0,pboil:0,gPress:0,gKTod:0,gPTod:0,gMon:0};
     const rt={t:[],l:[],c:[],g:[],wk:[],ct:[],gt:[],aux:[],oven:[]},hist={};
     const savedView=(location.hash||'').replace(/^#\/?/,'')||localStorage.getItem('ems-view')||'overview';
-    this.state={view:VIEWS[savedView]?savedView:'overview',range:'today',collapsed:false,paused:false,grafanaPanels:[],kelloggActual:null,kelloggActualTime:null,kelloggCogeneration:null,kelloggCogenerationTime:null,kelloggGas:null,kelloggGasTime:null,kelloggSteam:null,kelloggSteamTime:null,kelloggElectricalHistory:[],now:new Date(),v,rt,hist};
+    const nowIso=new Date(), startIso=new Date(nowIso.getTime()-24*60*60*1000);
+    this.state={view:VIEWS[savedView]?savedView:'overview',range:'live',collapsed:false,paused:false,grafanaPanels:[],authenticated:false,authChecked:false,showLogin:false,currentUser:'',currentRole:'',loginError:'',customRangeOpen:false,customStart:startIso.toISOString().slice(0,10),customStop:nowIso.toISOString().slice(0,10),kelloggActual:null,kelloggActualTime:null,kelloggCogeneration:null,kelloggCogenerationTime:null,kelloggGas:null,kelloggGasTime:null,kelloggSteam:null,kelloggSteamTime:null,kelloggElectricalHistory:[],now:new Date(),v,rt,hist};
     this.spCol={};
   }
   derive(v){
@@ -475,6 +499,18 @@ class Component extends DCLogic {
     window.addEventListener('hashchange',this.viewHash);
     if(window.innerWidth<1100) this.setState({collapsed:true});
     this.ro=new ResizeObserver(es=>requestAnimationFrame(()=>es.forEach(e=>{const c=window.echarts&&echarts.getInstanceByDom(e.target);c&&c.resize()})));
+    this.checkSession();
+  }
+  async checkSession(){
+    try{
+      const response=await fetch('/api/auth/me',{cache:'no-store'});
+      if(response.ok){
+        const user=await response.json();
+        this.setState({authenticated:true,authChecked:true,showLogin:false,currentUser:user.user,currentRole:user.role==='admin'?'Administrador':'Viewer'},()=>this.startAuthenticatedDashboard());
+      }else this.setState({authenticated:false,authChecked:true,showLogin:true});
+    }catch(error){this.setState({authenticated:false,authChecked:true,showLogin:true,loginError:'No fue posible conectar con el servidor'})}
+  }
+  startAuthenticatedDashboard(){
     this.loadKelloggActual();
     this.actualTimer=setInterval(()=>this.loadKelloggActual(),5000);
     this.loadKelloggElectricalHistory();
@@ -505,12 +541,43 @@ class Component extends DCLogic {
   }
   async loadKelloggElectricalHistory(){
     try{
-      const response=await fetch(`/api/kellogg/electrical-history?t=${Date.now()}`,{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
+      const params=new URLSearchParams({range:this.state.range||'live'});
+      if(this.state.range==='custom'){
+        params.set('start',`${this.state.customStart}T00:00:00.000Z`);
+        params.set('stop',`${this.state.customStop}T23:59:59.999Z`);
+      }
+      const response=await fetch(`/api/kellogg/electrical-history?${params}&t=${Date.now()}`,{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
       if(!response.ok) return;
       const data=await response.json();
       const points=Array.isArray(data.points)?data.points:[];
       this.setState({kelloggElectricalHistory:points});
     }catch(error){this.setState({kelloggElectricalHistory:[]})}
+  }
+  async login(){
+    const username=document.getElementById('loginUser')?.value?.trim();
+    const password=document.getElementById('loginPassword')?.value||'';
+    if(!username||!password){this.setState({loginError:'Ingresa usuario y contraseña'});return}
+    try{
+      const response=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});
+      const data=await response.json();
+      if(!response.ok){this.setState({loginError:data.error||'Acceso denegado'});return}
+      this.setState({authenticated:true,showLogin:false,loginError:'',currentUser:data.user,currentRole:data.role==='admin'?'Administrador':'Viewer'},()=>this.startAuthenticatedDashboard());
+    }catch(error){this.setState({loginError:'No fue posible iniciar sesión'})}
+  }
+  async logout(){
+    await fetch('/api/auth/logout',{method:'POST'});
+    if(this.actualTimer) clearInterval(this.actualTimer);
+    if(this.historyTimer) clearInterval(this.historyTimer);
+    this.setState({authenticated:false,showLogin:true,currentUser:'',currentRole:'',kelloggElectricalHistory:[]});
+  }
+  selectRange(range){
+    this.setState({range,customRangeOpen:range==='custom'},()=>this.loadKelloggElectricalHistory());
+  }
+  applyCustomRange(){
+    const start=document.getElementById('rangeStart')?.value;
+    const stop=document.getElementById('rangeStop')?.value;
+    if(!start||!stop||start>stop){this.setState({loginError:'Selecciona un periodo válido'});return}
+    this.setState({range:'custom',customStart:start,customStop:stop,customRangeOpen:false},()=>this.loadKelloggElectricalHistory());
   }
   componentDidUpdate(){this.sync()}
   waitCharts(){if(window.echarts){this.ready=true;this.sync()}else setTimeout(()=>this.waitCharts(),120)}
@@ -641,7 +708,7 @@ class Component extends DCLogic {
     ].map(g=>({title:UT[g.t].name,icon:UT[g.t].icon,color:UT[g.t].color,tint:hexA(UT[g.t].color,0.14),cards:g.cards,go:()=>this.go(g.t+'_general')}));
 
     const navGroups=NAV.map(g=>({showTitle:!!g.u&&!s.collapsed,showDivider:(!!g.u&&s.collapsed)||(g.div&&!g.u),title:g.u?UT[g.u].name.toUpperCase():'',icon:g.u?UT[g.u].icon:'',color:g.u?UT[g.u].color:'#64748B',
-      items:g.items.map(id=>{const x=VIEWS[id],a=id===s.view;const icon=g.u&&id.endsWith('general')?UT[g.u].icon:x.icon;return {label:x.label,full:x.title,icon,go:()=>this.go(id),expanded:!s.collapsed,justify:s.collapsed?'center':'flex-start',pl:(g.u&&!s.collapsed)?'20px':'12px',bg:a?'linear-gradient(90deg,rgba(59,130,246,0.22),rgba(59,130,246,0.06))':'transparent',color:a?'#F8FAFC':'#94A3B8',border:a?'rgba(59,130,246,0.35)':'transparent',shadow:a?'inset 2px 0 0 #3B82F6':'none'}})}));
+      items:g.items.filter(id=>id!== 'settings' || s.currentRole==='Administrador').map(id=>{const x=VIEWS[id],a=id===s.view;const icon=g.u&&id.endsWith('general')?UT[g.u].icon:x.icon;return {label:x.label,full:x.title,icon,go:()=>this.go(id),expanded:!s.collapsed,justify:s.collapsed?'center':'flex-start',pl:(g.u&&!s.collapsed)?'20px':'12px',bg:a?'linear-gradient(90deg,rgba(59,130,246,0.22),rgba(59,130,246,0.06))':'transparent',color:a?'#F8FAFC':'#94A3B8',border:a?'rgba(59,130,246,0.35)':'transparent',shadow:a?'inset 2px 0 0 #3B82F6':'none'}})}));
     const cur=VIEWS[s.view],u=s.view[1]==='_'?s.view[0]:null,isEnergy=s.view==='e_general'||s.view==='e_kellogg'||s.view==='e_pringles',isGeneral=!!u&&s.view.endsWith('general')&&!isEnergy;
 
     const site=(c,name,status,meta)=>badge(name,status,meta);
@@ -706,7 +773,18 @@ class Component extends DCLogic {
       togglePause:()=>this.setState(x=>({paused:!x.paused})),
       pauseIcon:s.paused?'icon-play':'icon-pause',liveLabel:s.paused?'PAUSED':'LIVE',liveColor:s.paused?C.orange:C.green,
       clock:s.now.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' · '+tstr(s.now),
-      ranges:RANGES.map(r=>({label:r.label,go:()=>this.setState({range:r.id}),bg:r.id===s.range?'#3B82F6':'transparent',color:r.id===s.range?'#fff':'#94A3B8'})),
+      ranges:RANGES.map(r=>({label:r.label,go:()=>this.selectRange(r.id),bg:r.id===s.range?'#3B82F6':'transparent',color:r.id===s.range?'#fff':'#94A3B8'})),
+      customRangeOpen:s.customRangeOpen,
+      customStart:s.customStart,
+      customStop:s.customStop,
+      applyCustomRange:()=>this.applyCustomRange(),
+      loginError:s.loginError,
+      login:()=>this.login(),
+      logout:()=>this.logout(),
+      showLogin:s.showLogin,
+      authenticated:s.authenticated,
+      currentUser:s.currentUser,
+      currentRole:s.currentRole,
       sideW:s.collapsed?'72px':'236px',expanded:!s.collapsed,navGroups,
       crumbs:cur.crumbs,pageTitle:cur.title,pageSub:cur.sub,
       isOverview:s.view==='overview',ovGroups,
