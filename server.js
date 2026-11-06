@@ -275,6 +275,8 @@ function requireSession(req, res, adminOnly = false) {
     if (!session || (adminOnly && session.role !== "admin")) {
       json(res, 401, { error: "Unauthorized" });
       return null;
+    }
+  return session;
 }
 
 function staticFile(req, res) {
@@ -285,8 +287,6 @@ function staticFile(req, res) {
       res.writeHead(403).end();
       return;
     }
-    return session;
-  }
   fs.readFile(filename, (error, data) => {
     if (error) { res.writeHead(404).end("Not found"); return; }
     res.writeHead(200, { "Content-Type": TYPES[path.extname(filename)] || "application/octet-stream", "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0", "Pragma": "no-cache", "Expires": "0" });
