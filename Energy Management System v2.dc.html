@@ -455,6 +455,59 @@ const yv=(name,o)=>Object.assign({type:'value',name,nameTextStyle:{color:'#64748
 const grad=(c,a)=>new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:hexA(c,a==null?0.32:a)},{offset:1,color:hexA(c,0)}]);
 const vgrad=c=>new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:c},{offset:1,color:hexA(c,0.35)}]);
 const ln=(name,data,color,area,dash,extra)=>Object.assign({name,type:'line',data,smooth:true,showSymbol:false,symbolSize:6,lineStyle:{width:dash?1.5:2,color,type:dash?'dashed':'solid'},itemStyle:{color},areaStyle:area?{color:grad(color)}:undefined},extra||{});
+const cfeBandFromTime=(timeTxt)=>{
+  if(!timeTxt) return 'Base';
+  const dt=new Date(timeTxt);
+  if(Number.isNaN(dt.getTime())) return 'Base';
+  const local=new Date(dt.getTime()-6*60*60*1000);
+  const year=local.getUTCFullYear();
+  const month=local.getUTCMonth()+1;
+  const day=local.getUTCDate();
+  const hour=local.getUTCHours();
+  const weekday=local.getUTCDay();
+  const dayStart=Date.UTC(year,month-1,day);
+  const firstApr=Date.UTC(year,3,1);
+  const aprWeekday=new Date(firstApr).getUTCDay();
+  const summerStart=Date.UTC(year,3,1+(aprWeekday===0?0:7-aprWeekday));
+  const oct31=Date.UTC(year,9,31);
+  const octWeekday=new Date(oct31).getUTCDay();
+  const winterStart=oct31-octWeekday*86400000;
+  const feb1=Date.UTC(year,1,1);
+  const aug1=Date.UTC(year,7,1);
+  const season=local.getTime()>=summerStart&&local.getTime()<aug1?'ver':local.getTime()>=winterStart||local.getTime()<feb1?'inv':'med';
+  const holiday=(month===1&&day===1)||(month===5&&day===1)||(month===9&&day===16)||(month===12&&day===25);
+  const wd=holiday?0:weekday;
+  if(season==='ver'){
+    if(wd>=1&&wd<=5)return hour>=1&&hour<6?'Base':hour>=20&&hour<22?'Punta':'Intermedia';
+    if(wd===6)return hour>=1&&hour<7?'Base':'Intermedia';
+    return hour<19?'Base':'Intermedia';
+  }
+  if(season==='inv'){
+    if(wd>=1&&wd<=5)return hour<6?'Base':hour>=18&&hour<22?'Punta':'Intermedia';
+    if(wd===6)return hour<8?'Base':hour>=19&&hour<21?'Punta':hour>=21?'Base':'Intermedia';
+    return hour<18?'Base':'Intermedia';
+  }
+  if(wd>=1&&wd<=5)return hour<6?'Base':hour>=19&&hour<22?'Punta':'Intermedia';
+  if(wd===6)return hour<7?'Base':'Intermedia';
+  return hour<19||hour>=23?'Base':'Intermedia';
+};
+const tariffBands=(times)=>{
+  if(!Array.isArray(times)||!times.length) return [];
+  const colors={Base:'rgba(148,163,184,0.32)',Intermedia:'rgba(245,158,11,0.24)',Punta:'rgba(239,68,68,0.30)'};
+  const bands=[];let start=0;let current=cfeBandFromTime(times[0]);
+  for(let i=1;i<times.length;i++){
+    const next=cfeBandFromTime(times[i]);
+    if(next!==current){
+      bands.push([{name:current,xAxis:times[start],itemStyle:{color:colors[current],borderWidth:0}},{xAxis:times[i-1]}]);
+      start=i;current=next;
+    }
+  }
+  if(start<times.length){
+    const last=current||'Base';
+    bands.push([{name:last,xAxis:times[start],itemStyle:{color:colors[last],borderWidth:0}},{xAxis:times[times.length-1]}]);
+  }
+  return bands;
+};
 const bar=(name,data,color,stack,extra)=>Object.assign({name,type:'bar',data,stack,barMaxWidth:16,itemStyle:{color:stack?color:vgrad(color),borderRadius:stack?0:[4,4,0,0]}},extra||{});
 const topBar=(name,data,color,stack,extra)=>bar(name,data,color,stack,Object.assign({itemStyle:{color,borderRadius:[4,4,0,0]}},extra||{}));
 const gauge=(val,min,max,dec,unit,color,name)=>({series:[{type:'gauge',min,max,startAngle:215,endAngle:-35,radius:'95%',center:['50%','58%'],progress:{show:true,width:12,roundCap:true,itemStyle:{color,shadowColor:color,shadowBlur:12}},axisLine:{roundCap:true,lineStyle:{width:12,color:[[1,'rgba(148,163,184,0.12)']]}},axisTick:{distance:-26,length:4,lineStyle:{color:'rgba(148,163,184,0.35)',width:1}},splitLine:{distance:-28,length:8,lineStyle:{color:'rgba(148,163,184,0.45)',width:1.5}},splitNumber:5,axisLabel:{show:false},pointer:{show:false},anchor:{show:false},title:{offsetCenter:[0,'32%'],color:C.gray,fontSize:11},detail:{valueAnimation:true,offsetCenter:[0,'0%'],fontSize:26,fontWeight:600,fontFamily:'JetBrains Mono',color:'#F8FAFC',formatter:v=>v.toFixed(dec)+unit},data:[{value:val,name}]}]});
@@ -558,7 +611,19 @@ class Component extends DCLogic {
       case 'ov_month':return B({xAxis:xc(M,true),yAxis:yv('MWh'),series:[bar("Kellogg's",mK,C.blue,'a'),topBar('Pringles',mP,hexA(C.blue,0.45),'a'),ln('Cogeneration',mC,C.green,false,false,{showSymbol:true,symbol:'circle'})]});
       case 'ov_demand':{const mx=Math.max(...dQ);return B({xAxis:Object.assign(xc(Q),{axisLabel:{color:C.gray,fontSize:10.5,interval:15}}),yAxis:yv('MW',{min:8,max:15}),series:[ln('Demand',dQ,C.blue,true,false,{markLine:Object.assign(ml(14,'Contracted 14 MW',C.red)),markPoint:{symbol:'circle',symbolSize:9,itemStyle:{color:C.orange,borderColor:'#0B1020',borderWidth:2},label:{show:true,position:'top',color:C.orange,fontSize:10.5,formatter:'Peak '+mx.toFixed(2)},data:[{type:'max'}]}})]})}
       case 'ov_mix':{const kImp=Math.max(0,v.kLoad-v.kCogen),tot=v.kLoad+v.pP;return donut([['Cogeneration',+v.kCogen.toFixed(2),C.green],["CFE → Kellogg's",+kImp.toFixed(2),C.blue],['CFE → Pringles',+v.pP.toFixed(2),C.sky]],(v.kCogen/tot*100).toFixed(1)+'%','cogeneration share','MW')}
-      case 'k_rt':return B({animationDurationUpdate:600,xAxis:rtx(),yAxis:yv('MW',{min:0,max:10}),series:[ln('Plant load',s.rt.l,C.blue),ln('Cogeneration',s.rt.c,C.green,true),ln('CFE import',s.rt.g,C.gray,false,true)]});
+      case 'k_rt':{
+        const labels=s.rt.t||[];
+        return B({
+          animationDurationUpdate:600,
+          xAxis:rtx(),
+          yAxis:yv('MW',{min:0,max:10}),
+          series:[
+            ln('Plant load',s.rt.l,C.blue,false,false,{markArea:{silent:true,label:{show:false},data:tariffBands(labels)}}),
+            ln('Cogeneration',s.rt.c,C.green,true),
+            ln('CFE import',s.rt.g,C.gray,false,true)
+          ]
+        });
+      }
       case 'k_daily':return B({xAxis:xc(D30,true),yAxis:yv('MWh',{min:100}),series:[bar('Generation',kGen30,C.green,null,{barMaxWidth:12,markLine:avg()})]});
       case 'k_eff':return gauge(v.eff,0,100,1,'%',C.green,'Total efficiency');
       case 'k_gas':return B({xAxis:xc(H,true),yAxis:[yv('Nm³/h',{min:1200}),yv('MW',{min:4,max:7,splitLine:{show:false}})],series:[bar('Natural gas',gasH,C.orange,null,{barMaxWidth:10}),ln('Electrical output',kC,C.green,false,false,{yAxisIndex:1})]});

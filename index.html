@@ -452,6 +452,70 @@ const yv=(name,o)=>Object.assign({type:'value',name,nameTextStyle:{color:'#64748
 const grad=(c,a)=>new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:hexA(c,a==null?0.32:a)},{offset:1,color:hexA(c,0)}]);
 const vgrad=c=>new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:c},{offset:1,color:hexA(c,0.35)}]);
 const ln=(name,data,color,area,dash,extra)=>Object.assign({name,type:'line',data,smooth:true,showSymbol:false,symbolSize:6,lineStyle:{width:dash?1.5:2,color,type:dash?'dashed':'solid'},itemStyle:{color},areaStyle:area?{color:grad(color)}:undefined},extra||{});
+const nthMonday=(year,month,n)=>{
+  const first=new Date(Date.UTC(year,month-1,1));
+  const firstDay=first.getUTCDay();
+  const offset=(firstDay<=1?1-firstDay:8-firstDay)+(n-1)*7;
+  return new Date(Date.UTC(year,month-1,1+offset)).setUTCHours(0,0,0,0);
+};
+const cfeTariffBand=time=>{
+  if(!time) return 'Base';
+  const dt=new Date(time);
+  if(Number.isNaN(dt.getTime())) return 'Base';
+  const local=new Date(dt.getTime()-6*60*60*1000);
+  const year=local.getUTCFullYear();
+  const month=local.getUTCMonth()+1;
+  const day=local.getUTCDate();
+  const hour=local.getUTCHours();
+  const weekday=local.getUTCDay();
+  const dayStart=Date.UTC(year,month-1,day);
+  const aprilFirst=Date.UTC(year,3,1);
+  const aprilWeekday=new Date(aprilFirst).getUTCDay();
+  const summerStart=Date.UTC(year,3,1+(aprilWeekday===0?0:7-aprilWeekday));
+  const october31=Date.UTC(year,9,31);
+  const october31Weekday=new Date(october31).getUTCDay();
+  const winterStart=october31-october31Weekday*86400000;
+  const february1=Date.UTC(year,1,1);
+  const august1=Date.UTC(year,7,1);
+  const season=local.getTime()>=summerStart&&local.getTime()<august1?'ver':local.getTime()>=winterStart||local.getTime()<february1?'inv':'med';
+  const holiday=(month===1&&day===1)||(month===5&&day===1)||(month===9&&day===16)||(month===12&&day===25)||nthMonday(year,2,1)===dayStart||nthMonday(year,3,3)===dayStart||nthMonday(year,11,3)===dayStart;
+  const wd=holiday?0:weekday;
+  if(season==='ver'){
+    if(wd>=1&&wd<=5)return hour>=1&&hour<6?'Base':hour>=20&&hour<22?'Punta':'Intermedia';
+    if(wd===6)return hour>=1&&hour<7?'Base':'Intermedia';
+    return hour<19?'Base':'Intermedia';
+  }
+  if(season==='inv'){
+    if(wd>=1&&wd<=5)return hour<6?'Base':hour>=18&&hour<22?'Punta':'Intermedia';
+    if(wd===6)return hour<8?'Base':hour>=19&&hour<21?'Punta':hour>=21?'Base':'Intermedia';
+    return hour<18?'Base':'Intermedia';
+  }
+  if(wd>=1&&wd<=5)return hour<6?'Base':hour>=19&&hour<22?'Punta':'Intermedia';
+  if(wd===6)return hour<7?'Base':'Intermedia';
+  return hour<19||hour>=23?'Base':'Intermedia';
+};
+const tariffMarkAreas=(points,times)=>{
+  if(!Array.isArray(points)||!points.length||!Array.isArray(times)||!times.length) return [];
+  const colors={Base:'rgba(148,163,184,0.32)',Intermedia:'rgba(245,158,11,0.24)',Punta:'rgba(239,68,68,0.30)'};
+  const areas=[];
+  let start=0;
+  let currentBand=cfeTariffBand(points[0]?.time);
+  for(let i=1;i<=points.length;i++){
+    const nextBand=i===points.length?null:cfeTariffBand(points[i]?.time);
+    if(nextBand===null||nextBand!==currentBand){
+      const end=Math.max(start,i-1);
+      const startLabel=times[start] ?? times[0];
+      const endLabel=times[end] ?? times[times.length-1];
+      areas.push([
+        {name:currentBand,xAxis:startLabel,itemStyle:{color:colors[currentBand] || 'rgba(148,163,184,0.16)'}},
+        {xAxis:endLabel}
+      ]);
+      start=i;
+      currentBand=nextBand;
+    }
+  }
+  return areas;
+};
 const bar=(name,data,color,stack,extra)=>Object.assign({name,type:'bar',data,stack,barMaxWidth:16,itemStyle:{color:stack?color:vgrad(color),borderRadius:stack?0:[4,4,0,0]}},extra||{});
 const topBar=(name,data,color,stack,extra)=>bar(name,data,color,stack,Object.assign({itemStyle:{color,borderRadius:[4,4,0,0]}},extra||{}));
 const gauge=(val,min,max,dec,unit,color,name)=>({series:[{type:'gauge',min,max,startAngle:215,endAngle:-35,radius:'95%',center:['50%','58%'],progress:{show:true,width:12,roundCap:true,itemStyle:{color,shadowColor:color,shadowBlur:12}},axisLine:{roundCap:true,lineStyle:{width:12,color:[[1,'rgba(148,163,184,0.12)']]}},axisTick:{distance:-26,length:4,lineStyle:{color:'rgba(148,163,184,0.35)',width:1}},splitLine:{distance:-28,length:8,lineStyle:{color:'rgba(148,163,184,0.45)',width:1.5}},splitNumber:5,axisLabel:{show:false},pointer:{show:false},anchor:{show:false},title:{offsetCenter:[0,'32%'],color:C.gray,fontSize:11},detail:{valueAnimation:true,offsetCenter:[0,'0%'],fontSize:26,fontWeight:600,fontFamily:'JetBrains Mono',color:'#F8FAFC',formatter:v=>v.toFixed(dec)+unit},data:[{value:val,name}]}]});
@@ -632,7 +696,13 @@ class Component extends DCLogic {
           xAxis:Object.assign(xc(times),{axisLabel:{color:C.gray,fontSize:10.5,interval:'auto'}}),
           yAxis:yv('MW',{min:0}),
           series:[
-            ln('Carga total planta',points.map(p=>mw(p.totalKw)),C.blue),
+            ln('Carga total planta',points.map(p=>mw(p.totalKw)),C.blue,false,false,{
+              markArea:{
+                silent:true,
+                label:{show:false},
+                data:tariffMarkAreas(points,times)
+              }
+            }),
             ln('Cogeneración',points.map(p=>mw(p.generationKw)),C.green,true),
             ln('Demanda CFE',points.map(p=>mw(p.cfeKw)),C.gray,false,true)
           ]
