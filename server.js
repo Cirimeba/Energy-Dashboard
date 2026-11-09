@@ -342,19 +342,26 @@ http.createServer(async (req, res) => {
     if (!requireSession(req, res)) return;
     try {
       const range = url.searchParams.get("range");
-      const aggregate = range === "7d" ? "15m" : range === "30d" || range === "custom" ? "30m" : "5m";
+      let aggregate = range === "7d" ? "15m" : range === "30d" || range === "custom" ? "30m" : "5m";
       let start = "-24h";
       let stop = "now()";
-      if (range === "7d") start = "-7d";
+      const requestedStart = url.searchParams.get("start");
+      const requestedStop = url.searchParams.get("stop");
+      if (requestedStart || requestedStop) {
+        const startDate = new Date(requestedStart);
+        const stopDate = new Date(requestedStop);
+        if (!requestedStart || !requestedStop || !Number.isFinite(startDate.getTime()) || !Number.isFinite(stopDate.getTime()) || stopDate <= startDate) {
+          return json(res, 400, { error: "Invalid history range" });
+        }
+        const durationDays = (stopDate.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000);
+        if (durationDays > 366) return json(res, 400, { error: "History range cannot exceed 366 days" });
+        start = `time(v: "${startDate.toISOString()}")`;
+        stop = `time(v: "${stopDate.toISOString()}")`;
+        aggregate = durationDays <= 2 ? "5m" : durationDays <= 8 ? "15m" : durationDays <= 45 ? "30m" : durationDays <= 180 ? "2h" : "1d";
+      } else if (range === "7d") start = "-7d";
       else if (range === "30d") start = "-30d";
       else if (range === "custom") {
-        const customStart = url.searchParams.get("start");
-        const customStop = url.searchParams.get("stop");
-        if (!customStart || !customStop || !Number.isFinite(Date.parse(customStart)) || !Number.isFinite(Date.parse(customStop))) {
-          return json(res, 400, { error: "Invalid custom range" });
-        }
-        start = `time(v: "${new Date(customStart).toISOString()}")`;
-        stop = `time(v: "${new Date(customStop).toISOString()}")`;
+        return json(res, 400, { error: "Custom ranges require start and stop" });
       }
       const data = await kelloggElectricalHistory(start, stop, aggregate);
       res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-store" });

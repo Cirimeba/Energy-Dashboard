@@ -41,7 +41,7 @@ input{font-family:inherit}
 
 <header ref="{{ headerRef }}" style="position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:16px;flex-wrap:wrap;min-height:64px;padding:10px 20px;background:rgba(11,16,32,0.78);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(148,163,184,0.12)">
   <div style="display:flex;align-items:center;gap:14px;flex:1 1 auto;min-width:240px">
-    <button onClick="{{ toggleSide }}" title="Toggle sidebar" style="width:36px;height:36px;display:grid;place-items:center;border-radius:10px;border:1px solid rgba(148,163,184,0.15);background:rgba(148,163,184,0.06);color:#94A3B8;cursor:pointer"><i class="icon-panel-left" style="font-size:17px"></i></button>
+    <button onClick="{{ toggleSide }}" title="{{ sideToggleTitle }}" aria-label="{{ sideToggleTitle }}" aria-expanded="{{ sideExpanded }}" style="width:36px;height:36px;display:grid;place-items:center;border-radius:10px;border:1px solid rgba(148,163,184,0.15);background:rgba(148,163,184,0.06);color:#94A3B8;cursor:pointer"><i class="{{ sideToggleIcon }}" style="font-size:17px"></i></button>
     <div style="width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(140deg,#3B82F6,#1D4ED8);box-shadow:0 6px 18px -6px rgba(59,130,246,0.8);color:#fff"><i class="icon-zap" style="font-size:19px"></i></div>
     <div style="display:flex;flex-direction:column;gap:1px">
       <div style="font-size:15.5px;font-weight:600;letter-spacing:-0.01em;color:#F1F5F9">Energy Management System</div>
@@ -55,13 +55,19 @@ input{font-family:inherit}
         <button onClick="{{ r.go }}" style="border:0;cursor:pointer;font:inherit;font-size:12px;font-weight:500;padding:6px 11px;border-radius:7px;white-space:nowrap;flex:0 0 auto;background:{{ r.bg }};color:{{ r.color }}">{{ r.label }}</button>
       </sc-for>
     </div>
+    <div style="display:flex;align-items:center;gap:4px;padding:3px;border-radius:10px;background:rgba(148,163,184,0.06);border:1px solid rgba(148,163,184,0.12)">
+      <button onClick="{{ previousPeriod }}" title="Periodo anterior" aria-label="Periodo anterior" style="width:30px;height:30px;display:grid;place-items:center;border:0;border-radius:7px;background:transparent;color:#CBD5E1;cursor:pointer"><i class="icon-chevron-left" style="font-size:15px"></i></button>
+      <span style="min-width:190px;text-align:center;font-size:10.5px;color:#CBD5E1;font-family:'JetBrains Mono',monospace">{{ periodLabel }}</span>
+      <button onClick="{{ nextPeriod }}" title="Periodo siguiente" aria-label="Periodo siguiente" disabled="{{ nextPeriodDisabled }}" style="width:30px;height:30px;display:grid;place-items:center;border:0;border-radius:7px;background:transparent;color:{{ nextPeriodColor }};cursor:{{ nextPeriodCursor }}"><i class="icon-chevron-right" style="font-size:15px"></i></button>
+    </div>
     <sc-if value="{{ customRangeOpen }}" hint-placeholder-val="{{ false }}">
       <div style="display:flex;align-items:center;gap:6px;padding:3px">
-        <input id="rangeStart" type="date" value="{{ customStart }}" style="height:30px;border-radius:7px;border:1px solid rgba(148,163,184,0.18);background:#0B1020;color:#CBD5E1;padding:0 7px;font-size:11px">
+        <input id="rangeStart" type="date" value="{{ customStart }}" onInput="{{ updateCustomStart }}" aria-label="Fecha inicial" style="height:34px;min-width:140px;border-radius:7px;border:1px solid rgba(148,163,184,0.28);background:#0B1020;color:#F8FAFC;padding:0 8px;font-size:12px;pointer-events:auto">
         <span style="font-size:11px;color:#64748B">a</span>
-        <input id="rangeStop" type="date" value="{{ customStop }}" style="height:30px;border-radius:7px;border:1px solid rgba(148,163,184,0.18);background:#0B1020;color:#CBD5E1;padding:0 7px;font-size:11px">
-        <button onClick="{{ applyCustomRange }}" style="height:30px;border:0;border-radius:7px;background:#2563EB;color:#fff;padding:0 9px;font:inherit;font-size:11px;cursor:pointer">Aplicar</button>
+        <input id="rangeStop" type="date" value="{{ customStop }}" onInput="{{ updateCustomStop }}" aria-label="Fecha final" style="height:34px;min-width:140px;border-radius:7px;border:1px solid rgba(148,163,184,0.28);background:#0B1020;color:#F8FAFC;padding:0 8px;font-size:12px;pointer-events:auto">
+        <button onClick="{{ applyCustomRange }}" style="height:34px;border:0;border-radius:7px;background:#2563EB;color:#fff;padding:0 11px;font:inherit;font-size:11px;cursor:pointer">Aplicar</button>
       </div>
+      <sc-if value="{{ customRangeError }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;color:#F87171">{{ customRangeError }}</span></sc-if>
     </sc-if>
     <div style="display:flex;align-items:center;gap:10px;padding:6px 8px 6px 12px;border-radius:10px;background:rgba(148,163,184,0.06);border:1px solid rgba(148,163,184,0.12)">
       <span style="width:8px;height:8px;border-radius:50%;background:{{ liveColor }};animation:pulse 2s infinite"></span>
@@ -71,7 +77,15 @@ input{font-family:inherit}
       </div>
       <button onClick="{{ togglePause }}" title="Pause / resume updates" style="width:28px;height:28px;display:grid;place-items:center;border-radius:7px;border:0;background:rgba(148,163,184,0.1);color:#CBD5E1;cursor:pointer"><i class="{{ pauseIcon }}" style="font-size:14px"></i></button>
     </div>
-    <button title="Alerts" style="position:relative;width:38px;height:38px;display:grid;place-items:center;border-radius:10px;border:1px solid rgba(148,163,184,0.15);background:rgba(148,163,184,0.06);color:#CBD5E1;cursor:pointer"><i class="icon-bell" style="font-size:17px"></i><span style="position:absolute;top:5px;right:5px;min-width:16px;height:16px;border-radius:8px;background:#F59E0B;color:#0B1020;font-size:10px;font-weight:700;display:grid;place-items:center">4</span></button>
+    <div style="position:relative">
+      <button onClick="{{ toggleInbox }}" title="Bandeja" aria-label="Bandeja" aria-expanded="{{ inboxOpen }}" style="width:38px;height:38px;display:grid;place-items:center;border-radius:10px;border:1px solid rgba(148,163,184,0.15);background:rgba(148,163,184,0.06);color:#CBD5E1;cursor:pointer"><i class="icon-inbox" style="font-size:17px"></i></button>
+      <sc-if value="{{ inboxOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;right:0;top:46px;z-index:50;width:240px;padding:14px;border:1px solid rgba(148,163,184,0.18);border-radius:12px;background:#111827;box-shadow:0 12px 32px rgba(0,0,0,0.4)">
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:#E2E8F0"><i class="icon-inbox" style="font-size:15px;color:#94A3B8"></i>Bandeja</div>
+          <div style="margin-top:9px;font-size:12px;color:#94A3B8">No hay notificaciones.</div>
+        </div>
+      </sc-if>
+    </div>
     <div style="display:flex;align-items:center;gap:10px;padding:4px 10px 4px 4px;border-radius:12px;border:1px solid rgba(148,163,184,0.12);background:rgba(148,163,184,0.05)">
       <div style="width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(140deg,#334155,#1E293B);font-size:12px;font-weight:600;color:#E2E8F0;border:1px solid rgba(148,163,184,0.2)">AR</div>
       <div style="display:flex;flex-direction:column;line-height:1.2">
@@ -302,7 +316,7 @@ input{font-family:inherit}
     <sc-if value="{{ isEK }}" hint-placeholder-val="{{ false }}">
       <div style="display:flex;flex-wrap:wrap;gap:16px">
         <div style="flex:2 1 520px;min-width:0;background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px">
-          <div style="display:flex;justify-content:space-between;gap:12px"><div><div style="font-size:14px;font-weight:600;color:#F1F5F9">Real-time Trend</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Carga planta, cogeneración y suministro CFE · 24 h</div></div><span style="height:fit-content;font-size:10.5px;font-family:'JetBrains Mono',monospace;color:#10B981;border:1px solid rgba(16,185,129,0.3);border-radius:6px;padding:3px 8px">InfluxDB</span></div>
+          <div style="display:flex;justify-content:space-between;gap:12px"><div><div style="font-size:14px;font-weight:600;color:#F1F5F9">Real-time Trend</div><div style="font-size:12px;color:#94A3B8;margin-top:2px">Carga planta, cogeneración y suministro CFE · {{ periodDescription }}</div><div style="font-size:10.5px;color:#64748B;margin-top:3px">Selecciona un tramo con la herramienta de zoom superior o ajusta los extremos del selector inferior; usa restaurar para volver al periodo completo.</div><sc-if value="{{ historyError }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;color:#F87171;margin-top:4px">{{ historyError }}</div></sc-if></div><span style="height:fit-content;font-size:10.5px;font-family:'JetBrains Mono',monospace;color:#10B981;border:1px solid rgba(16,185,129,0.3);border-radius:6px;padding:3px 8px">InfluxDB</span></div>
           <div data-chart="k_rt" style="height:290px;margin-top:8px"></div>
         </div>
         <div style="flex:1 1 300px;min-width:0;background:linear-gradient(160deg,rgba(30,41,59,0.55),rgba(15,23,42,0.35));border:1px solid rgba(148,163,184,0.12);border-radius:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 12px 32px -16px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.05);padding:18px;display:flex;flex-direction:column">
@@ -549,7 +563,7 @@ class Component extends DCLogic {
     const rt={t:[],l:[],c:[],g:[],wk:[],ct:[],gt:[],aux:[],oven:[]},hist={};
     const savedView=(location.hash||'').replace(/^#\/?/,'')||localStorage.getItem('ems-view')||'overview';
     const nowIso=new Date(), startIso=new Date(nowIso.getTime()-24*60*60*1000);
-    this.state={view:VIEWS[savedView]?savedView:'overview',range:'live',collapsed:false,paused:false,grafanaPanels:[],authenticated:false,authChecked:false,showLogin:false,currentUser:'',currentRole:'',loginError:'',customRangeOpen:false,customStart:startIso.toISOString().slice(0,10),customStop:nowIso.toISOString().slice(0,10),kelloggActual:null,kelloggActualTime:null,kelloggCogeneration:null,kelloggCogenerationTime:null,kelloggGas:null,kelloggGasTime:null,kelloggSteam:null,kelloggSteamTime:null,kelloggElectricalHistory:[],now:new Date(),v,rt,hist};
+    this.state={view:VIEWS[savedView]?savedView:'overview',range:'live',periodOffset:0,periodAnchor:Date.now(),collapsed:false,paused:false,inboxOpen:false,grafanaPanels:[],authenticated:false,authChecked:false,showLogin:false,currentUser:'',currentRole:'',loginError:'',customRangeError:'',historyError:'',customRangeOpen:false,customStart:this.customDateString(startIso),customStop:this.customDateString(nowIso),kelloggActual:null,kelloggActualTime:null,kelloggCogeneration:null,kelloggCogenerationTime:null,kelloggGas:null,kelloggGasTime:null,kelloggSteam:null,kelloggSteamTime:null,kelloggElectricalHistory:[],now:new Date(),v,rt,hist};
     this.spCol={};
   }
   derive(v){
@@ -604,18 +618,95 @@ class Component extends DCLogic {
     }catch(error){this.setState({kelloggActual:null,kelloggCogeneration:null,kelloggGas:null,kelloggSteam:null})}
   }
   async loadKelloggElectricalHistory(){
+    const requestKey=[this.state.range,this.state.periodOffset,this.state.periodAnchor,this.state.customStart,this.state.customStop].join('|');
+    this.historyRequestKey=requestKey;
     try{
-      const params=new URLSearchParams({range:this.state.range||'live'});
-      if(this.state.range==='custom'){
-        params.set('start',`${this.state.customStart}T00:00:00.000Z`);
-        params.set('stop',`${this.state.customStop}T23:59:59.999Z`);
-      }
+      if(this.state.range==='custom'&&!this.validCustomRange()) return;
+      const {start,stop}=this.periodWindow();
+      const params=new URLSearchParams({range:this.state.range||'live',start:start.toISOString(),stop:stop.toISOString()});
       const response=await fetch(`/api/kellogg/electrical-history?${params}&t=${Date.now()}`,{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
-      if(!response.ok) return;
+      if(!response.ok) throw new Error(`Electrical history request failed (${response.status})`);
       const data=await response.json();
+      if(this.historyRequestKey!==requestKey) return;
       const points=Array.isArray(data.points)?data.points:[];
-      this.setState({kelloggElectricalHistory:points});
-    }catch(error){this.setState({kelloggElectricalHistory:[]})}
+      this.setState({kelloggElectricalHistory:points,historyError:''});
+    }catch(error){
+      if(this.historyRequestKey!==requestKey) return;
+      console.error(error);
+      this.setState({historyError:'No se pudo cargar el histórico eléctrico'});
+    }
+  }
+  validCustomRange(){
+    const start=new Date(`${this.state.customStart}T00:00:00-06:00`);
+    const stop=new Date(`${this.state.customStop}T00:00:00-06:00`);
+    const days=(stop.getTime()-start.getTime())/(24*60*60*1000);
+    return Number.isFinite(start.getTime())&&Number.isFinite(stop.getTime())&&days>=0&&days<366;
+  }
+  periodWindow(){
+    const dayMs=24*60*60*1000;
+    if(this.state.range==='custom'){
+      const start=new Date(`${this.state.customStart}T00:00:00-06:00`);
+      const stop=new Date(`${this.state.customStop}T00:00:00-06:00`);
+      if(!Number.isFinite(start.getTime())||!Number.isFinite(stop.getTime())) return {start:new Date(Date.now()-dayMs),stop:new Date()};
+      stop.setTime(stop.getTime()+dayMs);
+      return {start,stop};
+    }
+    const days=this.state.range==='7d'?7:this.state.range==='30d'?30:1;
+    const anchor=(this.state.periodOffset||0)>0?(this.state.periodAnchor||Date.now()):Date.now();
+    const stop=new Date(anchor-(this.state.periodOffset||0)*days*dayMs);
+    return {start:new Date(stop.getTime()-days*dayMs),stop};
+  }
+  formatPeriod(){
+    if(this.state.range==='custom'&&!this.validCustomRange()) return 'Selecciona fechas válidas';
+    const {start,stop}=this.periodWindow();
+    const format=new Intl.DateTimeFormat('es-MX',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Mexico_City'});
+    return `${format.format(start)} – ${format.format(new Date(stop.getTime()-1))}`;
+  }
+  customDateString(date){
+    const local=new Date(date.getTime()-6*60*60*1000);
+    return `${local.getUTCFullYear()}-${pad(local.getUTCMonth()+1)}-${pad(local.getUTCDate())}`;
+  }
+  shiftCustomPeriod(direction){
+    if(!this.validCustomRange()) return;
+    const start=new Date(`${this.state.customStart}T00:00:00-06:00`);
+    const stop=new Date(`${this.state.customStop}T00:00:00-06:00`);
+    const days=Math.max(1,Math.round((stop.getTime()-start.getTime())/(24*60*60*1000))+1);
+    const offset=direction*days*24*60*60*1000;
+    this.setState({
+      customStart:this.customDateString(new Date(start.getTime()+offset)),
+      customStop:this.customDateString(new Date(stop.getTime()+offset))
+    },()=>this.loadKelloggElectricalHistory());
+  }
+  canAdvancePeriod(){
+    if(this.state.range!=='custom') return (this.state.periodOffset||0)>0;
+    if(!this.validCustomRange()) return false;
+    const start=new Date(`${this.state.customStart}T00:00:00-06:00`);
+    const stop=new Date(`${this.state.customStop}T00:00:00-06:00`);
+    const days=Math.max(1,Math.round((stop.getTime()-start.getTime())/(24*60*60*1000))+1);
+    return start.getTime()+days*24*60*60*1000<Date.now();
+  }
+  previousPeriod(){
+    if(this.state.range==='custom'){this.shiftCustomPeriod(-1);return}
+    this.setState({periodOffset:(this.state.periodOffset||0)+1,periodAnchor:(this.state.periodOffset||0)===0?Date.now():this.state.periodAnchor},()=>this.loadKelloggElectricalHistory());
+  }
+  nextPeriod(){
+    if(!this.canAdvancePeriod()) return;
+    if(this.state.range==='custom'){this.shiftCustomPeriod(1);return}
+    this.setState({periodOffset:Math.max(0,(this.state.periodOffset||0)-1)},()=>this.loadKelloggElectricalHistory());
+  }
+  updateCustomStart(event){
+    this.historyRequestKey=null;
+    this.setState({customStart:event.currentTarget.value,customRangeError:''});
+  }
+  updateCustomStop(event){
+    this.historyRequestKey=null;
+    this.setState({customStop:event.currentTarget.value,customRangeError:''});
+  }
+  toggleSide(){
+    this.setState({collapsed:!this.state.collapsed});
+  }
+  toggleInbox(){
+    this.setState({inboxOpen:!this.state.inboxOpen});
   }
   async login(){
     const username=document.getElementById('loginUser')?.value?.trim();
@@ -635,13 +726,12 @@ class Component extends DCLogic {
     this.setState({authenticated:false,showLogin:true,currentUser:'',currentRole:'',kelloggElectricalHistory:[]});
   }
   selectRange(range){
-    this.setState({range,customRangeOpen:range==='custom'},()=>this.loadKelloggElectricalHistory());
+    this.setState({range,periodOffset:0,periodAnchor:Date.now(),customRangeError:'',customRangeOpen:range==='custom'},()=>this.loadKelloggElectricalHistory());
   }
   applyCustomRange(){
-    const start=document.getElementById('rangeStart')?.value;
-    const stop=document.getElementById('rangeStop')?.value;
-    if(!start||!stop||start>stop){this.setState({loginError:'Selecciona un periodo válido'});return}
-    this.setState({range:'custom',customStart:start,customStop:stop,customRangeOpen:false},()=>this.loadKelloggElectricalHistory());
+    const {customStart:start,customStop:stop}=this.state;
+    if(!this.validCustomRange()){this.setState({customRangeError:'Selecciona fechas válidas en orden y con un máximo de 365 días'});return}
+    this.setState({range:'custom',periodOffset:0,customRangeError:'',customRangeOpen:true},()=>this.loadKelloggElectricalHistory());
   }
   componentDidUpdate(){this.sync()}
   waitCharts(){if(window.echarts){this.ready=true;this.sync()}else setTimeout(()=>this.waitCharts(),120)}
@@ -654,8 +744,19 @@ class Component extends DCLogic {
       const fresh=el.dataset.cid!==id;
       if(id==='k_rt'){
         const points=this.state.kelloggElectricalHistory||[];
-        if(points.length){c.setOption(this.opt(id),true)}
-        else c.setOption({animation:false,grid:{left:12,right:12,top:20,bottom:20},xAxis:{show:false},yAxis:{show:false},graphic:{type:'text',left:'center',top:'middle',style:{text:'Sin datos',fill:'#64748B',fontSize:12,fontFamily:'IBM Plex Sans'}}},true);
+        if(points.length){
+          const periodKey=[this.state.range,this.state.periodOffset,this.state.customStart,this.state.customStop].join('|');
+          const resetZoom=el.dataset.chartReady!=='true'||el.dataset.periodKey!==periodKey;
+          if(resetZoom||this.lastElectricalPoints!==points){
+            c.setOption(this.opt(id),resetZoom);
+            el.dataset.chartReady='true';
+            el.dataset.periodKey=periodKey;
+            this.lastElectricalPoints=points;
+          }
+        }else{
+          c.setOption({animation:false,grid:{left:12,right:12,top:20,bottom:20},xAxis:{show:false},yAxis:{show:false},graphic:{type:'text',left:'center',top:'middle',style:{text:this.state.historyError||'Sin datos',fill:'#64748B',fontSize:12,fontFamily:'IBM Plex Sans'}}},true);
+          el.dataset.chartReady='false';
+        }
         el.dataset.cid=id;
         return;
       }
@@ -666,7 +767,7 @@ class Component extends DCLogic {
     });
   }
   go(view){
-    if(window.echarts) document.querySelectorAll('[data-chart]').forEach(el=>{const c=echarts.getInstanceByDom(el);c&&c.dispose();delete el.dataset.cid});
+    if(window.echarts) document.querySelectorAll('[data-chart]').forEach(el=>{const c=echarts.getInstanceByDom(el);c&&c.dispose();delete el.dataset.cid;delete el.dataset.chartReady;delete el.dataset.periodKey});
     localStorage.setItem('ems-view',view);
     if(location.hash!==`#${view}`) history.replaceState(null,'',`#${view}`);
     this.setState({view,grafanaPanels:[]},()=>{if(view==='e_kellogg')this.loadKelloggActual()});window.scrollTo(0,0);
@@ -689,13 +790,29 @@ class Component extends DCLogic {
       case 'ov_mix':{const kImp=Math.max(0,v.kLoad-v.kCogen),tot=v.kLoad+v.pP;return donut([['Cogeneration',+v.kCogen.toFixed(2),C.green],["CFE → Kellogg's",+kImp.toFixed(2),C.blue],['CFE → Pringles',+v.pP.toFixed(2),C.sky]],(v.kCogen/tot*100).toFixed(1)+'%','cogeneration share','MW')}
       case 'k_rt':{
         const points=s.kelloggElectricalHistory||[];
-        const times=points.map(p=>new Date(p.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+          const times=points.map(p=>p.time);
         const mw=p=>Number.isFinite(p)?+(p/1000).toFixed(3):null;
         return B({
           animationDurationUpdate:600,
-          xAxis:Object.assign(xc(times),{axisLabel:{color:C.gray,fontSize:10.5,interval:'auto'}}),
-          yAxis:yv('MW',{min:0}),
-          series:[
+            grid:{left:4,right:12,top:40,bottom:40,containLabel:true},
+            xAxis:Object.assign(xc(times),{axisLabel:{color:C.gray,fontSize:10.5,interval:'auto',formatter:value=>new Date(value).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}}),
+            yAxis:yv('MW',{min:0}),
+            dataZoom:[
+              {type:'inside',xAxisIndex:0,filterMode:'none',zoomOnMouseWheel:false,moveOnMouseMove:true},
+              {type:'slider',xAxisIndex:0,filterMode:'none',height:14,bottom:4,show:true,showDetail:false,brushSelect:true,borderColor:'rgba(148,163,184,0.2)',backgroundColor:'rgba(148,163,184,0.08)',fillerColor:'rgba(59,130,246,0.22)',dataBackground:{lineStyle:{color:'#64748B',width:1},areaStyle:{color:'rgba(148,163,184,0.12)'}},selectedDataBackground:{lineStyle:{color:'#60A5FA',width:1},areaStyle:{color:'rgba(59,130,246,0.2)'}},handleStyle:{color:'#3B82F6',borderColor:'#BFDBFE'},moveHandleStyle:{color:'#3B82F6'}},
+            ],
+            toolbox:{
+              right:0,
+              top:18,
+              itemSize:14,
+              iconStyle:{borderColor:'#94A3B8'},
+              emphasis:{iconStyle:{borderColor:'#F8FAFC'}},
+              feature:{
+                dataZoom:{yAxisIndex:'none',title:{zoom:'Seleccionar zona para acercar',back:'Deshacer zoom'}},
+                restore:{title:'Restaurar gráfica'}
+              }
+            },
+            series:[
             ln('Carga total planta',points.map(p=>mw(p.totalKw)),C.blue,false,false,{
               markArea:{
                 silent:true,
@@ -839,14 +956,30 @@ class Component extends DCLogic {
     ];
     return {
       headerRef:this.headerRef,sideTop:(s.hH||64)+'px',sideH:`calc(100vh - ${s.hH||64}px)`,
-      toggleSide:()=>this.setState(x=>({collapsed:!x.collapsed})),
+      toggleSide:()=>this.toggleSide(),
+      sideExpanded:!s.collapsed,
+      sideToggleTitle:s.collapsed?'Expandir navegación':'Contraer navegación',
+      sideToggleIcon:s.collapsed?'icon-panel-right':'icon-panel-left',
       togglePause:()=>this.setState(x=>({paused:!x.paused})),
       pauseIcon:s.paused?'icon-play':'icon-pause',liveLabel:s.paused?'PAUSED':'LIVE',liveColor:s.paused?C.orange:C.green,
       clock:s.now.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' · '+tstr(s.now),
       ranges:RANGES.map(r=>({label:r.label,go:()=>this.selectRange(r.id),bg:r.id===s.range?'#3B82F6':'transparent',color:r.id===s.range?'#fff':'#94A3B8'})),
+      previousPeriod:()=>this.previousPeriod(),
+      nextPeriod:()=>this.nextPeriod(),
+      periodLabel:this.formatPeriod(),
+      periodDescription:s.range==='live'?'Últimas 24 h':s.range==='7d'?'Últimos 7 días':s.range==='30d'?'Últimos 30 días':'Periodo personalizado',
+      nextPeriodColor:this.canAdvancePeriod()?'#CBD5E1':'#475569',
+      nextPeriodCursor:this.canAdvancePeriod()?'pointer':'not-allowed',
+      nextPeriodDisabled:!this.canAdvancePeriod(),
+      toggleInbox:()=>this.toggleInbox(),
+      inboxOpen:s.inboxOpen,
+      historyError:s.historyError,
       customRangeOpen:s.customRangeOpen,
       customStart:s.customStart,
       customStop:s.customStop,
+      customRangeError:s.customRangeError,
+      updateCustomStart:event=>this.updateCustomStart(event),
+      updateCustomStop:event=>this.updateCustomStop(event),
       applyCustomRange:()=>this.applyCustomRange(),
       loginError:s.loginError,
       login:()=>this.login(),

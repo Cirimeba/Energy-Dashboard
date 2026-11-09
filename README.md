@@ -16,3 +16,5 @@ Then open `http://localhost:8000`.
 
 - `index.html`: latest dashboard implementation
 - `support.js`: dashboard runtime
+
+The Kellogg electrical trend supports drag-to-zoom, historical period navigation, and custom date ranges.
